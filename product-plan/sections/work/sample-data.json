@@ -1,0 +1,178 @@
+{
+  "_meta": {
+    "models": {
+      "credits": "A production, show, or project Mike worked on. Displays show/project name and network.",
+      "photos": "A career moment captured in an image for the photo gallery.",
+      "interviews": "A video interview featuring Mike, hosted on YouTube."
+    },
+    "relationships": [
+      "Credits, photos, and interviews are displayed as separate stacked sections",
+      "All entities are standalone with no cross-references"
+    ]
+  },
+  "credits": [
+    {
+      "id": "credit-pga",
+      "name": "PGA Tour Live",
+      "network": "Golf Channel"
+    },
+    {
+      "id": "credit-nascar",
+      "name": "NASCAR Media Days",
+      "network": "NASCAR"
+    },
+    {
+      "id": "credit-martial-arts",
+      "name": "U.S. Martial Arts Championships",
+      "network": "Sports Network"
+    },
+    {
+      "id": "credit-judo",
+      "name": "U.S. Olympic Judo Qualifying",
+      "network": "Olympic Channel"
+    },
+    {
+      "id": "credit-ultra",
+      "name": "Ultra Music Festival",
+      "network": "Live Events"
+    },
+    {
+      "id": "credit-wrestling",
+      "name": "Professional Wrestling",
+      "network": "Various"
+    },
+    {
+      "id": "credit-nickelodeon",
+      "name": "Nickelodeon Productions",
+      "network": "Nickelodeon"
+    },
+    {
+      "id": "credit-mmc",
+      "name": "The Mickey Mouse Club",
+      "network": "Disney Channel"
+    },
+    {
+      "id": "credit-sunshine",
+      "name": "Sunshine Network Sports",
+      "network": "Fox Sports Sun"
+    },
+    {
+      "id": "credit-cbs",
+      "name": "CBS Cable Productions",
+      "network": "CBS Cable"
+    },
+    {
+      "id": "credit-daytime",
+      "name": "Daytime Network",
+      "network": "Lifetime"
+    },
+    {
+      "id": "credit-usa",
+      "name": "USA Network Shows",
+      "network": "USA Network"
+    },
+    {
+      "id": "credit-cbb",
+      "name": "College Basketball Tournaments",
+      "network": "Syndicated"
+    },
+    {
+      "id": "credit-rockets",
+      "name": "Rocket Launches",
+      "network": "CCI"
+    },
+    {
+      "id": "credit-corporate",
+      "name": "Corporate Productions",
+      "network": "Various Clients"
+    }
+  ],
+  "photos": [
+    {
+      "id": "photo-golf",
+      "src": "/artifacts/PICTURES/GOLF CHANNEL.PNG",
+      "alt": "Mike at Golf Channel",
+      "caption": "On set at Golf Channel"
+    },
+    {
+      "id": "photo-nickelodeon",
+      "src": "/artifacts/PICTURES/Nickelodeon.jpg",
+      "alt": "Nickelodeon production",
+      "caption": "Nickelodeon Studios"
+    },
+    {
+      "id": "photo-figure-it-out",
+      "src": "/artifacts/PICTURES/Nickelodeon Figure It Out.jpg",
+      "alt": "Figure It Out set",
+      "caption": "Figure It Out on Nickelodeon"
+    },
+    {
+      "id": "photo-gullah",
+      "src": "/artifacts/PICTURES/Gullah Gullah Island.jpg",
+      "alt": "Gullah Gullah Island production",
+      "caption": "Gullah Gullah Island"
+    },
+    {
+      "id": "photo-animal-jam",
+      "src": "/artifacts/PICTURES/ANIMAL JAM.jpg",
+      "alt": "Animal Jam production",
+      "caption": "Animal Jam"
+    },
+    {
+      "id": "photo-mtv",
+      "src": "/artifacts/PICTURES/MTV Spring Break 97.jpg",
+      "alt": "MTV Spring Break 1997",
+      "caption": "MTV Spring Break '97"
+    },
+    {
+      "id": "photo-disney",
+      "src": "/artifacts/PICTURES/Disney Christmas Parade.jpg",
+      "alt": "Disney Christmas Parade",
+      "caption": "Disney Christmas Parade"
+    },
+    {
+      "id": "photo-daytona",
+      "src": "/artifacts/PICTURES/Daytona 500 1989.jpg",
+      "alt": "Daytona 500 1989",
+      "caption": "Daytona 500, 1989"
+    },
+    {
+      "id": "photo-zappa",
+      "src": "/artifacts/PICTURES/Frank Zappa National Video Center Radio 1990.jpg",
+      "alt": "Frank Zappa at National Video Center",
+      "caption": "Frank Zappa at National Video Center, 1990"
+    },
+    {
+      "id": "photo-liza",
+      "src": "/artifacts/PICTURES/Liza Minnelli.jpg",
+      "alt": "Liza Minnelli production",
+      "caption": "Working with Liza Minnelli"
+    },
+    {
+      "id": "photo-marie",
+      "src": "/artifacts/PICTURES/Marie Osmond.jpg",
+      "alt": "Marie Osmond production",
+      "caption": "Marie Osmond"
+    },
+    {
+      "id": "photo-ali",
+      "src": "/artifacts/PICTURES/ALI.jpg",
+      "alt": "Muhammad Ali",
+      "caption": "Muhammad Ali"
+    }
+  ],
+  "interviews": [
+    {
+      "id": "interview-1",
+      "title": "On To Something Interview",
+      "description": "Mike discusses his career journey and passion for live television production.",
+      "youtubeUrl": "https://www.youtube.com/watch?v=fQ9yuk4y7Qk"
+    },
+    {
+      "id": "interview-2",
+      "title": "Career Insights",
+      "description": "Insights on what it takes to succeed in live sports and entertainment broadcasting.",
+      "youtubeUrl": "https://www.youtube.com/watch?v=JI68CdSV-mc"
+    }
+  ]
+}

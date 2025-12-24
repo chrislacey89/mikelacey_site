@@ -1,0 +1,15 @@
+/* Design Tokens for The Mike Lacey Portfolio */
+
+:root {
+  /* Colors - Using Tailwind color names */
+  --color-primary: blue;
+  --color-secondary: amber;
+  --color-neutral: stone;
+
+  /* Typography */
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+}
+
+/* Dark mode handled via Tailwind's dark: variant */

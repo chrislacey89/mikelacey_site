@@ -1,0 +1,144 @@
+{
+  "_meta": {
+    "models": {
+      "testimonials": "An attaboy document — a thank-you note, letter, or recognition from colleagues and industry professionals."
+    },
+    "relationships": [
+      "Testimonials are displayed as a masonry gallery with lightbox viewing"
+    ]
+  },
+  "testimonials": [
+    {
+      "id": "attaboy-all-that-s2",
+      "src": "/artifacts/at_a_boys/ALL THAT SEASON 2.jpg",
+      "alt": "All That Season 2 thank you letter",
+      "caption": "All That - Season 2"
+    },
+    {
+      "id": "attaboy-am-la",
+      "src": "/artifacts/at_a_boys/AM LOS ANGELE.jpg",
+      "alt": "AM Los Angeles letter",
+      "caption": "AM Los Angeles"
+    },
+    {
+      "id": "attaboy-animal-jam",
+      "src": "/artifacts/at_a_boys/ANIMAL JAM.jpg",
+      "alt": "Animal Jam thank you letter",
+      "caption": "Animal Jam"
+    },
+    {
+      "id": "attaboy-big-bag",
+      "src": "/artifacts/at_a_boys/BIG BAG CHILDRENS TELEVISION WORKSHOP.jpg",
+      "alt": "Big Bag - Children's Television Workshop letter",
+      "caption": "Big Bag - Children's Television Workshop"
+    },
+    {
+      "id": "attaboy-bruce-williams",
+      "src": "/artifacts/at_a_boys/BRUCE WILLAIAMS SHOW PILOT.jpg",
+      "alt": "Bruce Williams Show Pilot letter",
+      "caption": "Bruce Williams Show Pilot"
+    },
+    {
+      "id": "attaboy-cmn",
+      "src": "/artifacts/at_a_boys/CHILDRENS MIRACLE NETWORK.jpg",
+      "alt": "Children's Miracle Network letter",
+      "caption": "Children's Miracle Network"
+    },
+    {
+      "id": "attaboy-cmn-1997",
+      "src": "/artifacts/at_a_boys/CMN 1997.jpg",
+      "alt": "Children's Miracle Network 1997 letter",
+      "caption": "Children's Miracle Network 1997"
+    },
+    {
+      "id": "attaboy-diamond-p",
+      "src": "/artifacts/at_a_boys/DIAMOND P SPORTS.jpg",
+      "alt": "Diamond P Sports letter",
+      "caption": "Diamond P Sports"
+    },
+    {
+      "id": "attaboy-double-dare",
+      "src": "/artifacts/at_a_boys/DOUBLE DARE 2000.jpg",
+      "alt": "Double Dare 2000 letter",
+      "caption": "Double Dare 2000"
+    },
+    {
+      "id": "attaboy-eileen-thanks-again",
+      "src": "/artifacts/at_a_boys/EILEEN THANKS AGAIN.jpg",
+      "alt": "Thank you note from Eileen",
+      "caption": "Thank You from Eileen"
+    },
+    {
+      "id": "attaboy-eileen-thanks",
+      "src": "/artifacts/at_a_boys/EILEEN THANKS.jpg",
+      "alt": "Thank you note from Eileen",
+      "caption": "Thank You from Eileen"
+    },
+    {
+      "id": "attaboy-gullah-gullah",
+      "src": "/artifacts/at_a_boys/GULLAH GULLAH ISLAND.jpg",
+      "alt": "Gullah Gullah Island letter",
+      "caption": "Gullah Gullah Island"
+    },
+    {
+      "id": "attaboy-kids-world",
+      "src": "/artifacts/at_a_boys/KIDS WORLD COUNCIL.jpg",
+      "alt": "Kids World Council letter",
+      "caption": "Kids World Council"
+    },
+    {
+      "id": "attaboy-miami-heat",
+      "src": "/artifacts/at_a_boys/MIAMI HEAT TED BALLARD.jpg",
+      "alt": "Miami Heat - Ted Ballard letter",
+      "caption": "Miami Heat - Ted Ballard"
+    },
+    {
+      "id": "attaboy-mtv-sandblast",
+      "src": "/artifacts/at_a_boys/MTV SAND BLAST.jpg",
+      "alt": "MTV Sand Blast letter",
+      "caption": "MTV Sand Blast"
+    },
+    {
+      "id": "attaboy-reel-to-reel",
+      "src": "/artifacts/at_a_boys/REEL TO REEL PICTURE SHOW.jpg",
+      "alt": "Reel to Reel Picture Show letter",
+      "caption": "Reel to Reel Picture Show"
+    },
+    {
+      "id": "attaboy-stromberg",
+      "src": "/artifacts/at_a_boys/STOMBERG CARLSON.jpg",
+      "alt": "Stromberg Carlson letter",
+      "caption": "Stromberg Carlson"
+    },
+    {
+      "id": "attaboy-suny",
+      "src": "/artifacts/at_a_boys/SUNY NEW PALTZ OUTSTANDING SENIOR AWADRD.jpg",
+      "alt": "SUNY New Paltz Outstanding Senior Award",
+      "caption": "SUNY New Paltz Outstanding Senior Award"
+    },
+    {
+      "id": "attaboy-ted-ballard",
+      "src": "/artifacts/at_a_boys/TED BALLARD MIAMI HEAT.jpg",
+      "alt": "Ted Ballard - Miami Heat letter",
+      "caption": "Ted Ballard - Miami Heat"
+    },
+    {
+      "id": "attaboy-tollin-robbins",
+      "src": "/artifacts/at_a_boys/TOLLIN ROBBINS PRODUCTION ALL THAT.jpg",
+      "alt": "Tollin Robbins Production - All That letter",
+      "caption": "Tollin Robbins Production - All That"
+    },
+    {
+      "id": "attaboy-tootsie",
+      "src": "/artifacts/at_a_boys/TOOTSIE.jpg",
+      "alt": "Tootsie production letter",
+      "caption": "Tootsie"
+    },
+    {
+      "id": "attaboy-wcpx",
+      "src": "/artifacts/at_a_boys/WCPX TV.jpg",
+      "alt": "WCPX TV letter",
+      "caption": "WCPX TV"
+    }
+  ]
+}

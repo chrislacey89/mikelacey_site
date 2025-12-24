@@ -1,0 +1,62 @@
+{
+  "_meta": {
+    "models": {
+      "timelineEvents": "Each era represents a chapter in Mike's 44-year career journey, with the year, a title, and the narrative that tells that part of the story."
+    },
+    "relationships": [
+      "Timeline events are displayed in chronological order as a scrolling narrative",
+      "Each era can optionally include a photo to illustrate that chapter"
+    ]
+  },
+  "timelineEvents": [
+    {
+      "id": "era-1981-start",
+      "year": "1981",
+      "title": "The Beginning",
+      "narrative": "After graduating SUNY New Paltz with a Communications degree, I got a job at National Video Center in New York City working in the shipping department. Getting an education is a great thing to do, but a degree in TV Production doesn't equate to real-world experience. National was the perfect place to learn.",
+      "photo": null
+    },
+    {
+      "id": "era-1981-nyc",
+      "year": "1981–1987",
+      "title": "NYC Years",
+      "narrative": "I learned so much at National. If you watch the movie \"Tootsie,\" you'll see where I worked! They had just relocated from a small space on 57th Street to a four-story complex on 42nd Street. Cable TV was at its infancy and I was on the ground floor—literally. I got to experience everything from tape operation to high-end productions with CBS Cable and the Daytime Network, the precursor to today's Lifetime Network.\n\nI performed all technical positions except A-1 and assisted the production manager in hiring crews, renting equipment, and booking facilities. I watched and learned from the best in the industry, figuring out what works and what doesn't: be polite, say please and thank you, and treat everyone with respect. Taking advantage of an opportunity on a USA Network show, I became a cameraman and lighting director that people wanted to work with.",
+      "photo": null
+    },
+    {
+      "id": "era-1987-orlando",
+      "year": "1987",
+      "title": "Orlando Move",
+      "narrative": "The allure of the Disney studios and Universal's plans were too much to resist. Working in the city was fantastic, but it was time to get off those New Jersey Transit buses. I got a job with Studio 6 Productions housed in WCPX (now WKMG) as the remote location supervisor. I still did lighting and camera work, and helped build a five-camera truck used for sports and entertainment. My tenure there ended in 1991.",
+      "photo": null
+    },
+    {
+      "id": "era-1991-freelance",
+      "year": "1991",
+      "title": "Freelance",
+      "narrative": "I moved to full-time freelance and was able to get work at Nickelodeon—most of what was produced there from 1992 to 2000—doing camera work, both studio and EFP. I worked at the Disney Studios, including the last season of the Mickey Mouse Club, and started my foray into sports with Sunshine Network (now Fox Sports Sun) and corporate work as well.",
+      "photo": null
+    },
+    {
+      "id": "era-late90s-td",
+      "year": "Late 1990s",
+      "title": "Learning to TD",
+      "narrative": "I saw the writing on the wall with the studios slowing down and decided I could figure out how to TD. I told my plan to Paul Spitzer, a great TD in Orlando, and he said he'd show me the ropes. I practiced every day at lunch while working on a show at Disney.\n\nA few months later, I got a late call to TD the next day in Gainesville for a UF softball game. I said yes, as long as everyone understood it wasn't going to be a \"clean\" show. It wasn't perfect, but it wasn't terrible either—and they asked me back.",
+      "photo": null
+    },
+    {
+      "id": "era-2000s-directing",
+      "year": "2000s",
+      "title": "The Directing Breakthrough",
+      "narrative": "While getting better as a TD, I still operated camera and paid close attention to the nuances of every director I worked with. I knew I could fill that seat too. After being told no so many times, I was given a break by CCI. I met Jim Lewis, helped him on the TD end, and he had enough confidence in me to let me direct syndicated college basketball tournament games and rocket launches. Everything went well, and I was convinced I should continue on that path.\n\nI want people in this business who are passionate about it to know my story and never give up on their dream.",
+      "photo": null
+    },
+    {
+      "id": "era-present",
+      "year": "Present",
+      "title": "The Director's Chair",
+      "narrative": "Since working with CCI, I've been able to direct PGA Tour golf—my main client now—the U.S. Martial Arts Championships, U.S. Olympic Judo qualifying, NASCAR Media Days, The Ultra Music Fest, professional wrestling (how fun!), corporate shows, and more.\n\nTV production is the perfect vocation for me. I like the fact that when you're doing your job, you're the only one doing it in the whole world at that moment for that show. Make it the best you can, no matter what role you play. Whether you're an A-2 putting mics in position, coiling cable, framing a camera, cutting cameras, or interacting with the crew—be passionate about what you do.\n\nI'm looking forward to the next chapter in my career.",
+      "photo": null
+    }
+  ]
+}
