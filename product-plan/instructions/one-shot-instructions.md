@@ -9,7 +9,7 @@ This document combines all milestones for implementing the complete portfolio si
 ## About These Instructions
 
 **What you're receiving:**
-- Finished UI designs (React components with full styling)
+- Finished UI designs (Astro components with full styling)
 - Data model definitions (TypeScript types and sample data)
 - UI/UX specifications (user flows, requirements, screenshots)
 - Design system tokens (colors, typography, spacing)
@@ -70,8 +70,8 @@ Create routes for each section:
 
 Copy the shell components from `product-plan/shell/components/` to your project:
 
-- `AppShell.tsx` — Main layout wrapper
-- `MainNav.tsx` — Navigation component with mobile menu
+- `AppShell.astro` — Main layout wrapper
+- `MainNav.astro` — Navigation component with mobile menu
 - `index.ts` — Exports
 
 **Wire Up Navigation:**
@@ -132,7 +132,7 @@ The Home section is a full-screen hero landing page featuring Mike's production 
 
 Copy the section components from `product-plan/sections/home/components/`:
 
-- `HomeHero.tsx` — The main hero component
+- `HomeHero.astro` — The main hero component
 - `index.ts` — Exports
 
 ### Callbacks
@@ -153,7 +153,7 @@ You'll need to provide:
 
 - `product-plan/sections/home/README.md` — Feature overview
 - `product-plan/sections/home/tests.md` — Test-writing instructions
-- `product-plan/sections/home/components/` — React components
+- `product-plan/sections/home/components/` — Astro components
 - `product-plan/sections/home/types.ts` — TypeScript interfaces
 - `product-plan/sections/home/sample-data.json` — Test data
 - `product-plan/sections/home/screenshot.png` — Visual reference
@@ -193,8 +193,8 @@ The Story section tells Mike's 44-year career journey from 1981 to present. Visi
 
 Copy the section components from `product-plan/sections/story/components/`:
 
-- `Story.tsx` — Main story component with header and footer CTAs
-- `TimelineEra.tsx` — Individual era display with year marker
+- `Story.astro` — Main story component with header and footer CTAs
+- `TimelineEra.astro` — Individual era display with year marker
 - `index.ts` — Exports
 
 ### Callbacks
@@ -210,7 +210,7 @@ Wire up these user actions:
 
 - `product-plan/sections/story/README.md` — Feature overview
 - `product-plan/sections/story/tests.md` — Test-writing instructions
-- `product-plan/sections/story/components/` — React components
+- `product-plan/sections/story/components/` — Astro components
 - `product-plan/sections/story/types.ts` — TypeScript interfaces
 - `product-plan/sections/story/sample-data.json` — Test data with 7 career eras
 - `product-plan/sections/story/screenshot.png` — Visual reference
@@ -251,8 +251,8 @@ The Work section displays Mike's 44 years of production work through three stack
 
 Copy the section components from `product-plan/sections/work/components/`:
 
-- `Work.tsx` — Main work component with all three sections
-- `PhotoLightbox.tsx` — Lightbox modal for viewing photos
+- `Work.astro` — Main work component with all three sections
+- `PhotoLightbox.astro` — Lightbox modal for viewing photos
 - `index.ts` — Exports
 
 ### Callbacks
@@ -274,7 +274,7 @@ You'll need to provide:
 
 - `product-plan/sections/work/README.md` — Feature overview
 - `product-plan/sections/work/tests.md` — Test-writing instructions
-- `product-plan/sections/work/components/` — React components
+- `product-plan/sections/work/components/` — Astro components
 - `product-plan/sections/work/types.ts` — TypeScript interfaces
 - `product-plan/sections/work/sample-data.json` — Test data
 - `product-plan/sections/work/screenshot.png` — Visual reference
@@ -316,8 +316,8 @@ The Kudos section displays photos of actual thank-you notes, letters, and recogn
 
 Copy the section components from `product-plan/sections/kudos/components/`:
 
-- `Kudos.tsx` — Main kudos component with masonry gallery
-- `DocumentLightbox.tsx` — Lightbox modal for viewing documents
+- `Kudos.astro` — Main kudos component with masonry gallery
+- `DocumentLightbox.astro` — Lightbox modal for viewing documents
 - `index.ts` — Exports
 
 ### Callbacks
@@ -339,7 +339,7 @@ You'll need to provide:
 
 - `product-plan/sections/kudos/README.md` — Feature overview
 - `product-plan/sections/kudos/tests.md` — Test-writing instructions
-- `product-plan/sections/kudos/components/` — React components
+- `product-plan/sections/kudos/components/` — Astro components
 - `product-plan/sections/kudos/types.ts` — TypeScript interfaces
 - `product-plan/sections/kudos/sample-data.json` — Test data
 - `product-plan/sections/kudos/screenshot.png` — Visual reference
@@ -382,7 +382,7 @@ The Connect section provides multiple ways for visitors to get in touch with Mik
 
 Copy the section components from `product-plan/sections/connect/components/`:
 
-- `Connect.tsx` — Main connect component with form and vCard
+- `Connect.astro` — Main connect component with form and vCard
 - `index.ts` — Exports
 
 ### Callbacks
@@ -417,7 +417,7 @@ Wire up these user actions:
 
 - `product-plan/sections/connect/README.md` — Feature overview
 - `product-plan/sections/connect/tests.md` — Test-writing instructions
-- `product-plan/sections/connect/components/` — React components
+- `product-plan/sections/connect/components/` — Astro components
 - `product-plan/sections/connect/types.ts` — TypeScript interfaces
 - `product-plan/sections/connect/sample-data.json` — Test data with real contact info
 - `product-plan/sections/connect/screenshot.png` — Visual reference
