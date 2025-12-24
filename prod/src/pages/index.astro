@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import HomeHero from '../components/home/HomeHero.astro';
+import homeData from '../data/home.json';
+---
+
+<BaseLayout title="Mike Lacey - Television Director">
+  <HomeHero
+    hero={homeData.hero}
+    profile={homeData.profile}
+    ctas={homeData.ctas}
+  />
+</BaseLayout>

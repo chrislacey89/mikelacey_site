@@ -1,0 +1,13 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Work from '../components/work/Work.astro';
+import workData from '../data/work.json';
+---
+
+<BaseLayout title="My Work - Mike Lacey">
+  <Work
+    credits={workData.credits}
+    photos={workData.photos}
+    interviews={workData.interviews}
+  />
+</BaseLayout>

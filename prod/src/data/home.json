@@ -1,0 +1,33 @@
+{
+  "hero": {
+    "backgroundImage": "/images/golf-channel-production.png",
+    "headline": "44 Years Behind the Camera",
+    "tagline": "From the shipping room to the director's chair — a career built on passion, respect, and making every show the best it can be."
+  },
+  "profile": {
+    "name": "Mike Lacey",
+    "title": "Television Director",
+    "headshotImage": "/images/headshot.png",
+    "subtitle": "Sports & Entertainment Production"
+  },
+  "ctas": [
+    {
+      "id": "story",
+      "label": "Learn My Story",
+      "href": "/story",
+      "variant": "primary"
+    },
+    {
+      "id": "work",
+      "label": "See My Work",
+      "href": "/work",
+      "variant": "secondary"
+    },
+    {
+      "id": "connect",
+      "label": "Get in Touch",
+      "href": "/connect",
+      "variant": "secondary"
+    }
+  ]
+}

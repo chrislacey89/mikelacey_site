@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Connect from '../components/connect/Connect.astro';
+import connectData from '../data/connect.json';
+
+// TODO: Add your Formspree form ID here after setting up at formspree.io
+const FORMSPREE_ID = undefined; // e.g., 'xyzabc123'
+---
+
+<BaseLayout title="Connect - Mike Lacey">
+  <Connect
+    contactInfo={connectData.contactInfo}
+    professionalLinks={connectData.professionalLinks}
+    formFields={connectData.formFields}
+    sectionContent={connectData.sectionContent}
+    formspreeId={FORMSPREE_ID}
+  />
+</BaseLayout>

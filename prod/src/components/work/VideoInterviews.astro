@@ -1,0 +1,42 @@
+---
+import type { Interview } from '../../types';
+
+interface Props {
+  interviews: Interview[];
+}
+
+const { interviews } = Astro.props;
+
+// Extract YouTube video ID from URL
+function getYouTubeId(url: string): string {
+  const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
+  return match ? match[1] : '';
+}
+---
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  {interviews.map((interview) => {
+    const videoId = getYouTubeId(interview.youtubeUrl);
+    return (
+      <div class="space-y-4">
+        <div class="aspect-video rounded-lg overflow-hidden bg-stone-900">
+          <iframe
+            src={`https://www.youtube.com/embed/${videoId}`}
+            title={interview.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+            class="w-full h-full"
+          ></iframe>
+        </div>
+        <div>
+          <h3 class="font-semibold text-stone-900 dark:text-white">
+            {interview.title}
+          </h3>
+          <p class="text-sm text-stone-600 dark:text-stone-400">
+            {interview.description}
+          </p>
+        </div>
+      </div>
+    );
+  })}
+</div>

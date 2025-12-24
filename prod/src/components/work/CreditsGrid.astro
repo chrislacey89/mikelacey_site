@@ -1,0 +1,22 @@
+---
+import type { Credit } from '../../types';
+
+interface Props {
+  credits: Credit[];
+}
+
+const { credits } = Astro.props;
+---
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {credits.map((credit) => (
+    <div class="p-4 bg-white dark:bg-stone-800 rounded-lg border border-stone-200 dark:border-stone-700 shadow-sm">
+      <h3 class="font-semibold text-stone-900 dark:text-white">
+        {credit.name}
+      </h3>
+      <p class="text-sm text-stone-500 dark:text-stone-400">
+        {credit.network}
+      </p>
+    </div>
+  ))}
+</div>

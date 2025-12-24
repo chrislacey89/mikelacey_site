@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Attaboys from '../components/attaboys/Attaboys.astro';
+import attaboysData from '../data/attaboys.json';
+---
+
+<BaseLayout title="Attaboys - Mike Lacey">
+  <Attaboys testimonials={attaboysData.testimonials} />
+</BaseLayout>

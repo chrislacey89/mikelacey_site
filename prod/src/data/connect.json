@@ -1,0 +1,30 @@
+{
+  "contactInfo": {
+    "fullName": "Mike Lacey",
+    "firstName": "Mike",
+    "lastName": "Lacey",
+    "title": "Television Director & Technical Director",
+    "email": "themikelacey@gmail.com",
+    "phone": "+1-407-257-6132",
+    "phoneDisplay": "(407) 257-6132",
+    "website": "https://mikelacey.com",
+    "linkedin": "https://www.linkedin.com/in/mike-lacey-35926513/",
+    "imdb": "https://m.imdb.com/name/nm0479943/"
+  },
+  "professionalLinks": [
+    { "id": "link-imdb", "type": "imdb", "label": "IMDb", "url": "https://m.imdb.com/name/nm0479943/", "icon": "film" },
+    { "id": "link-linkedin", "type": "linkedin", "label": "LinkedIn", "url": "https://www.linkedin.com/in/mike-lacey-35926513/", "icon": "linkedin" },
+    { "id": "link-email", "type": "email", "label": "Email", "url": "mailto:themikelacey@gmail.com", "icon": "mail" },
+    { "id": "link-phone", "type": "phone", "label": "Call", "url": "tel:+1-407-257-6132", "icon": "phone" }
+  ],
+  "formFields": {
+    "name": { "label": "Your Name", "placeholder": "John Smith", "required": true },
+    "email": { "label": "Email Address", "placeholder": "john@example.com", "required": true },
+    "phone": { "label": "Phone (Optional)", "placeholder": "(555) 123-4567", "required": false },
+    "message": { "label": "Message", "placeholder": "Tell me about your project...", "required": true }
+  },
+  "sectionContent": {
+    "title": "Let's Connect",
+    "intro": "Whether you're looking for a seasoned director for your next production or just want to say hello, I'd love to hear from you."
+  }
+}
