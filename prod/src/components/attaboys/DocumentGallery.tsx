@@ -34,7 +34,7 @@ export default function DocumentGallery({ testimonials }: DocumentGalleryProps) 
 
       {selectedDoc && (
         <DocumentLightbox
-          document={selectedDoc}
+          testimonial={selectedDoc}
           onClose={() => setSelectedDoc(null)}
         />
       )}
