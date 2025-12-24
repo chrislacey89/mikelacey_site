@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 import type { Testimonial } from '../../types';
 
 interface DocumentLightboxProps {
-  document: Testimonial;
+  testimonial: Testimonial;
   onClose: () => void;
 }
 
-export function DocumentLightbox({ document, onClose }: DocumentLightboxProps) {
+export function DocumentLightbox({ testimonial, onClose }: DocumentLightboxProps) {
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -42,11 +42,11 @@ export function DocumentLightbox({ document, onClose }: DocumentLightboxProps) {
         onClick={(e) => e.stopPropagation()}
       >
         <img
-          src={document.src}
-          alt={document.alt}
+          src={testimonial.src}
+          alt={testimonial.alt}
           className="max-w-full max-h-[80vh] object-contain rounded-lg bg-white"
         />
-        <p className="mt-4 text-white text-center text-lg">{document.caption}</p>
+        <p className="mt-4 text-white text-center text-lg">{testimonial.caption}</p>
       </div>
     </div>
   );
