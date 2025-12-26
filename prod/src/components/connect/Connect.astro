@@ -3,6 +3,7 @@ import type { ContactInfo, ProfessionalLink, FormFields, SectionContent } from '
 import ContactForm from './ContactForm.tsx';
 import QRCodeCard from './QRCodeCard.tsx';
 import ProfessionalLinks from './ProfessionalLinks.astro';
+import { generateVCardQR } from '../../utils/qrcode';
 
 interface Props {
   contactInfo: ContactInfo;
@@ -13,6 +14,9 @@ interface Props {
 }
 
 const { contactInfo, professionalLinks, formFields, sectionContent, formspreeId } = Astro.props;
+
+// Generate QR code at build time
+const qrCodeDataUrl = await generateVCardQR(contactInfo);
 ---
 
 <div class="min-h-screen bg-stone-50 dark:bg-stone-900">
@@ -47,7 +51,7 @@ const { contactInfo, professionalLinks, formFields, sectionContent, formspreeId 
       <!-- vCard & Links Column -->
       <div class="order-1 lg:order-2 space-y-8">
         <!-- QR Code Card -->
-        <QRCodeCard client:load contactInfo={contactInfo} />
+        <QRCodeCard client:load contactInfo={contactInfo} qrCodeDataUrl={qrCodeDataUrl} />
 
         <!-- Professional Links -->
         <ProfessionalLinks links={professionalLinks} />

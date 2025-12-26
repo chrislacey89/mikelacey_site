@@ -1,9 +1,9 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Story from '../components/story/Story.astro';
+import StorySection from '../components/story/Story.astro';
 import storyData from '../data/story.json';
 ---
 
 <BaseLayout title="My Story - Mike Lacey">
-  <Story timelineEvents={storyData.timelineEvents} />
+  <StorySection timelineEvents={storyData.timelineEvents} />
 </BaseLayout>

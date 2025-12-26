@@ -2,12 +2,24 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HomeHero from '../components/home/HomeHero.astro';
 import homeData from '../data/home.json';
+import type { CTA } from '../types';
+
+const ctas: CTA[] = homeData.ctas.map((cta) => {
+  if (cta.variant !== 'primary' && cta.variant !== 'secondary') {
+    throw new Error(`Invalid CTA variant: ${cta.variant}`);
+  }
+
+  return {
+    ...cta,
+    variant: cta.variant,
+  };
+});
 ---
 
 <BaseLayout title="Mike Lacey - Television Director">
   <HomeHero
     hero={homeData.hero}
     profile={homeData.profile}
-    ctas={homeData.ctas}
+    ctas={ctas}
   />
 </BaseLayout>

@@ -1,15 +1,18 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Connect from '../components/connect/Connect.astro';
+import ConnectSection from '../components/connect/Connect.astro';
 import connectData from '../data/connect.json';
+import type { ProfessionalLink } from '../types';
 
 const FORMSPREE_ID = 'mlgednnn';
+
+const professionalLinks = connectData.professionalLinks as ProfessionalLink[];
 ---
 
 <BaseLayout title="Connect - Mike Lacey">
-  <Connect
+  <ConnectSection
     contactInfo={connectData.contactInfo}
-    professionalLinks={connectData.professionalLinks}
+    professionalLinks={professionalLinks}
     formFields={connectData.formFields}
     sectionContent={connectData.sectionContent}
     formspreeId={FORMSPREE_ID}

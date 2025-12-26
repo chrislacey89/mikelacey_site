@@ -1,22 +1,12 @@
-import { useEffect, useState } from 'react';
 import type { ContactInfo } from '../../types';
-import { generateVCardQR } from '../../utils/qrcode';
 import { downloadVCard } from '../../utils/vcard';
 
 interface QRCodeCardProps {
   contactInfo: ContactInfo;
+  qrCodeDataUrl: string;
 }
 
-export default function QRCodeCard({ contactInfo }: QRCodeCardProps) {
-  const [qrCode, setQrCode] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    generateVCardQR(contactInfo)
-      .then(setQrCode)
-      .finally(() => setLoading(false));
-  }, [contactInfo]);
-
+export default function QRCodeCard({ contactInfo, qrCodeDataUrl }: QRCodeCardProps) {
   return (
     <div className="bg-white dark:bg-stone-800 rounded-2xl shadow-lg p-6 sm:p-8 text-center">
       <h2 className="text-2xl font-bold text-stone-900 dark:text-white mb-2">
@@ -28,13 +18,7 @@ export default function QRCodeCard({ contactInfo }: QRCodeCardProps) {
 
       {/* QR Code */}
       <div className="inline-block p-4 bg-white rounded-xl shadow-inner mb-6">
-        {loading ? (
-          <div className="w-48 h-48 flex items-center justify-center">
-            <div className="animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full"></div>
-          </div>
-        ) : (
-          <img src={qrCode} alt="Contact QR Code" className="w-48 h-48" />
-        )}
+        <img src={qrCodeDataUrl} alt="Contact QR Code" className="w-48 h-48" />
       </div>
 
       {/* Contact Info Preview */}
