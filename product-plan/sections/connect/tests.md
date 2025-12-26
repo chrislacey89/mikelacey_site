@@ -200,7 +200,7 @@ const mockContactInfo = {
   fullName: 'Mike Lacey',
   firstName: 'Mike',
   lastName: 'Lacey',
-  title: 'Television Director & Technical Director',
+  title: 'Television Director',
   email: 'themikelacey@gmail.com',
   phone: '+1-407-257-6132',
   phoneDisplay: '(407) 257-6132',
