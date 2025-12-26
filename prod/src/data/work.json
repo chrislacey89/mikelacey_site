@@ -18,7 +18,7 @@
   ],
   "photos": [
     { "id": "photo-nixon", "src": "/artifacts/PICTURES/Richard Nixon.png", "alt": "Richard Nixon", "caption": "Richard Nixon" },
-    { "id": "photo-golf", "src": "/artifacts/PICTURES/GOLF CHANNEL.png", "alt": "Golf Channel", "caption": "Golf Channel" },
+    { "id": "photo-golf", "src": "/artifacts/PICTURES/GOLF-CHANNEL.png", "alt": "Golf Channel", "caption": "Golf Channel" },
     { "id": "photo-nickelodeon", "src": "/artifacts/PICTURES/Nickelodeon.jpg", "alt": "Nickelodeon production", "caption": "Nickelodeon Studios" },
     { "id": "photo-figure-it-out", "src": "/artifacts/PICTURES/Nickelodeon Figure It Out.jpg", "alt": "Figure It Out set", "caption": "Figure It Out on Nickelodeon" },
     { "id": "photo-gullah", "src": "/artifacts/PICTURES/Gullah Gullah Island.jpg", "alt": "Gullah Gullah Island production", "caption": "Gullah Gullah Island" },
