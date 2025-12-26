@@ -11,6 +11,9 @@ export default defineConfig({
   site: 'https://www.themikelacey.com',
   output: 'static',
   adapter: vercel(),
+  prefetch: {
+    prefetchAll: true
+  },
   vite: {
     plugins: [tailwindcss()]
   },

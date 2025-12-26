@@ -1,7 +1,7 @@
 # Project: Mike Lacey Portfolio
 
 ## Site Information
-- **URL**: https://themikelacey.com
+- **URL**: https://www.themikelacey.com
 - **Owner**: Mike Lacey
 - **Role**: Television Director
 - **Experience**: Decades in sports and entertainment production
