@@ -36,7 +36,10 @@ export default function ContactForm({ formFields, formspreeId }: ContactFormProp
 
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify(formData),
       });
 
@@ -52,8 +55,16 @@ export default function ContactForm({ formFields, formspreeId }: ContactFormProp
     }
   };
 
+  const formatPhoneNumber = (value: string): string => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+    return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
+  };
+
   const handleInputChange = (field: keyof ContactFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    const formattedValue = field === 'phone' ? formatPhoneNumber(value) : value;
+    setFormData(prev => ({ ...prev, [field]: formattedValue }));
   };
 
   if (submitted) {
