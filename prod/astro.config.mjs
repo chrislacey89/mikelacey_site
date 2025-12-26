@@ -10,9 +10,7 @@ import vercel from '@astrojs/vercel';
 export default defineConfig({
   site: 'https://themikelacey.com',
   output: 'static',
-  adapter: vercel({
-    webAnalytics: { enabled: true }
-  }),
+  adapter: vercel(),
   vite: {
     plugins: [tailwindcss()]
   },
