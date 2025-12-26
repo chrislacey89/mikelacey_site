@@ -1,9 +1,34 @@
 ---
+import { getImage } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import Attaboys from '../components/attaboys/Attaboys.astro';
+import AttaboysSection from '../components/attaboys/Attaboys.astro';
 import attaboysData from '../data/attaboys.json';
+
+// Import all attaboy images from the artifacts directory
+const imageModules = import.meta.glob<{ default: ImageMetadata }>(
+  '/public/artifacts/at_a_boys/*.{jpg,jpeg,png}',
+  { eager: true }
+);
+
+// Pre-optimize all testimonial images at build time
+const optimizedTestimonials = await Promise.all(
+  attaboysData.testimonials.map(async (testimonial) => {
+    const imagePath = `/public${testimonial.src}`;
+    const imageModule = imageModules[imagePath];
+
+    if (imageModule) {
+      const optimized = await getImage({
+        src: imageModule.default,
+        format: 'webp',
+        quality: 80,
+      });
+      return { ...testimonial, src: optimized.src };
+    }
+    return testimonial;
+  })
+);
 ---
 
 <BaseLayout title="Attaboys - Mike Lacey">
-  <Attaboys testimonials={attaboysData.testimonials} />
+  <AttaboysSection testimonials={optimizedTestimonials} />
 </BaseLayout>
