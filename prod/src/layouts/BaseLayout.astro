@@ -14,7 +14,9 @@ const {
   ogImage
 } = Astro.props;
 
-const siteUrl = Astro.url.origin;
+const siteUrl = (import.meta.env.VERCEL_ENV !== 'production' && import.meta.env.VERCEL_URL)
+  ? `https://${import.meta.env.VERCEL_URL}`
+  : (Astro.site?.origin || 'https://themikelacey.com');
 const ogImageUrl = ogImage || `${siteUrl}/api/og.png?title=${encodeURIComponent(title)}`;
 
 const currentPath = Astro.url.pathname;
