@@ -4,9 +4,9 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import WorkSection from '../components/work/Work.astro';
 import workData from '../data/work.json';
 
-// Import all photos from the artifacts directory
+// Import all photos from artifacts and images directories
 const imageModules = import.meta.glob<{ default: ImageMetadata }>(
-  '/public/artifacts/PICTURES/*.{jpg,jpeg,png}',
+  ['/public/artifacts/PICTURES/*.{jpg,jpeg,png}', '/public/images/*.{jpg,jpeg,png}'],
   { eager: true }
 );
 
