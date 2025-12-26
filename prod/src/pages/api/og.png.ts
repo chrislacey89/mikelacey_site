@@ -12,8 +12,8 @@ export const GET: APIRoute = async ({ request }) => {
 
   // Read the headshot image
   const headshotPath = process.env.NODE_ENV === 'development'
-    ? path.resolve('./public/images/headshot.jpg')
-    : path.resolve('./dist/client/images/headshot.jpg');
+    ? path.resolve('./public/images/headshot.jpeg')
+    : path.resolve('./dist/client/images/headshot.jpeg');
 
   let headshotSrc = '';
   try {
