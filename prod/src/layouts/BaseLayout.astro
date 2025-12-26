@@ -14,7 +14,7 @@ const {
   ogImage
 } = Astro.props;
 
-const siteUrl = Astro.site?.origin || 'https://themikelacey.com';
+const siteUrl = Astro.url.origin;
 const ogImageUrl = ogImage || `${siteUrl}/api/og.png?title=${encodeURIComponent(title)}`;
 
 const currentPath = Astro.url.pathname;
