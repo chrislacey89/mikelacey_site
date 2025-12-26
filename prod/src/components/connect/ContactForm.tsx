@@ -40,7 +40,11 @@ export default function ContactForm({ formFields, formspreeId }: ContactFormProp
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          _replyto: formData.email,
+          _subject: `New message from ${formData.name}`
+        }),
       });
 
       if (response.ok) {
