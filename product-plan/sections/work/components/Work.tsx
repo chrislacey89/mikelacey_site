@@ -35,7 +35,7 @@ export function Work({
             The Work
           </h1>
           <p className="text-lg sm:text-xl text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed">
-            44 years of sports and entertainment productions across networks and platforms.
+            Sports and entertainment productions across networks and platforms.
           </p>
         </div>
       </header>

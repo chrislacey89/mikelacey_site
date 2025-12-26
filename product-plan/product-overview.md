@@ -2,7 +2,7 @@
 
 ## Summary
 
-A portfolio and career showcase for Mike Lacey, a television director with 44 years of experience in sports and entertainment production. The site tells his story from the ground up—literally starting in shipping at National Video Center—to directing PGA Tour Live, and invites future clients to book him for their next project.
+A portfolio and career showcase for Mike Lacey, a television director with decades of experience in sports and entertainment production. The site tells his story from the ground up—literally starting in shipping at National Video Center—to directing PGA Tour Live, and invites future clients to book him for their next project.
 
 ## Planned Sections
 
@@ -19,7 +19,7 @@ A portfolio and career showcase for Mike Lacey, a television director with 44 ye
 ## Data Model
 
 **Entities:**
-- **TimelineEvent** — Milestones in Mike's 44-year career journey
+- **TimelineEvent** — Milestones in Mike's career journey
 - **Credit** — Productions, shows, or projects Mike worked on
 - **Testimonial** — "Attaboys" from colleagues and industry professionals
 - **Interview** — Video interviews hosted on YouTube

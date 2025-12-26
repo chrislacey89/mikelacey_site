@@ -4,7 +4,7 @@
 - **URL**: https://themikelacey.com
 - **Owner**: Mike Lacey
 - **Role**: Television Director
-- **Experience**: 44+ years in sports and entertainment production
+- **Experience**: Decades in sports and entertainment production
 
 ## Tech Stack
 - Astro 5.x

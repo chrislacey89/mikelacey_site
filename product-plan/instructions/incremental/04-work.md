@@ -32,7 +32,7 @@ Implement the Work section — Mike's portfolio showcasing credits, photo galler
 
 ## Overview
 
-The Work section displays Mike's 44 years of production work through three stacked subsections: a grid of production credits, a masonry photo gallery with lightbox, and embedded YouTube video interviews.
+The Work section displays Mike's production work through three stacked subsections: a grid of production credits, a masonry photo gallery with lightbox, and embedded YouTube video interviews.
 
 **Key Functionality:**
 - Display production credits in a responsive grid
