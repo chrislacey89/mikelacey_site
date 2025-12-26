@@ -44,6 +44,7 @@ export function PhotoLightbox({ photo, onClose }: PhotoLightboxProps) {
         <img
           src={photo.src}
           alt={photo.alt}
+          decoding="async"
           className="max-w-full max-h-[80vh] object-contain rounded-lg"
         />
         <p className="mt-4 text-white text-center text-lg">{photo.caption}</p>

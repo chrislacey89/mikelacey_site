@@ -1,5 +1,8 @@
 ---
+import { Image, getImage } from 'astro:assets';
 import type { Hero, Profile, CTA } from '../../types';
+import headshotImage from '../../assets/images/headshot.jpeg';
+import backgroundImage from '../../assets/images/golf-channel-production.png';
 
 interface Props {
   hero: Hero;
@@ -8,13 +11,16 @@ interface Props {
 }
 
 const { hero, profile, ctas } = Astro.props;
+
+// Get optimized background image
+const optimizedBg = await getImage({ src: backgroundImage, format: 'webp', quality: 80 });
 ---
 
 <section class="relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
   <!-- Background Image with Overlay -->
   <div
     class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-    style={`background-image: url(${hero.backgroundImage})`}
+    style={`background-image: url(${optimizedBg.src})`}
   >
     <!-- Gradient overlay - lighter on left to show production rundown -->
     <div class="absolute inset-0 bg-gradient-to-r from-stone-950/70 via-stone-950/60 to-stone-950/50 dark:from-stone-950/80 dark:via-stone-950/70 dark:to-stone-950/60"></div>
@@ -77,10 +83,15 @@ const { hero, profile, ctas } = Astro.props;
 
           <!-- Headshot container -->
           <div class="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-4 border-white/10 shadow-2xl">
-            <img
-              src={profile.headshotImage}
+            <Image
+              src={headshotImage}
               alt={profile.name}
+              width={384}
+              height={384}
+              format="webp"
+              quality={85}
               class="w-full h-full object-cover"
+              loading="eager"
             />
             <!-- Subtle inner shadow for depth -->
             <div class="absolute inset-0 rounded-full shadow-inner"></div>

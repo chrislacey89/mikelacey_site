@@ -44,6 +44,7 @@ export function DocumentLightbox({ testimonial, onClose }: DocumentLightboxProps
         <img
           src={testimonial.src}
           alt={testimonial.alt}
+          decoding="async"
           className="max-w-full max-h-[80vh] object-contain rounded-lg bg-white"
         />
         <p className="mt-4 text-white text-center text-lg">{testimonial.caption}</p>

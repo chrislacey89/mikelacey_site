@@ -53,6 +53,8 @@ const paragraphs = event.narrative.split('\n\n');
           src={event.photo}
           alt={event.title}
           class="rounded-lg shadow-lg max-w-md"
+          loading="lazy"
+          decoding="async"
         />
       </div>
     )}
