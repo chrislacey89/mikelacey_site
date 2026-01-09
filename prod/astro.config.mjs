@@ -24,7 +24,10 @@ export default defineConfig({
       projectId: 'yi6f32nh',
       dataset: 'production',
       useCdn: false, // Required for static builds
-      studioBasePath: '/studio'
+      studioBasePath: '/studio',
+      stega: {
+        studioUrl: 'https://www.themikelacey.com/studio'
+      }
     }),
     react()
   ]
