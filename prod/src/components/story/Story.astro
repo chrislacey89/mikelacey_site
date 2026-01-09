@@ -2,11 +2,37 @@
 import type { TimelineEvent } from '../../types';
 import TimelineEra from './TimelineEra.astro';
 
-interface Props {
-  timelineEvents: TimelineEvent[];
+interface PageContent {
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  footer?: {
+    heading?: string;
+    paragraph?: string;
+    primaryCtaLabel?: string;
+    primaryCtaHref?: string;
+    secondaryCtaLabel?: string;
+    secondaryCtaHref?: string;
+  };
 }
 
-const { timelineEvents } = Astro.props;
+interface Props {
+  timelineEvents: TimelineEvent[];
+  pageContent?: PageContent;
+}
+
+const { timelineEvents, pageContent } = Astro.props;
+
+// Defaults for page content
+const eyebrow = pageContent?.eyebrow || 'The Journey';
+const title = pageContent?.title || 'My Story';
+const intro = pageContent?.intro || "From the shipping department to the director's chair — a career built on passion, perseverance, and making every show the best it can be.";
+const footerHeading = pageContent?.footer?.heading || 'Ready to see the work?';
+const footerParagraph = pageContent?.footer?.paragraph || 'Explore my portfolio of credits, photos, and interviews from over four decades in television production.';
+const primaryCtaLabel = pageContent?.footer?.primaryCtaLabel || 'See My Work';
+const primaryCtaHref = pageContent?.footer?.primaryCtaHref || '/work';
+const secondaryCtaLabel = pageContent?.footer?.secondaryCtaLabel || 'Get in Touch';
+const secondaryCtaHref = pageContent?.footer?.secondaryCtaHref || '/connect';
 ---
 
 <div class="min-h-screen bg-stone-50 dark:bg-stone-900">
@@ -15,13 +41,13 @@ const { timelineEvents } = Astro.props;
     <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-stone-50 to-amber-50/30 dark:from-stone-900 dark:via-stone-900 dark:to-blue-950/20"></div>
     <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-amber-600 dark:text-amber-400 font-medium tracking-wide uppercase text-sm mb-4">
-        The Journey
+        {eyebrow}
       </p>
       <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-900 dark:text-white mb-6 leading-tight">
-        My Story
+        {title}
       </h1>
       <p class="text-lg sm:text-xl text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed">
-        From the shipping department to the director's chair — a career built on passion, perseverance, and making every show the best it can be.
+        {intro}
       </p>
     </div>
   </header>
@@ -43,23 +69,23 @@ const { timelineEvents } = Astro.props;
   <footer class="bg-stone-100 dark:bg-stone-800/50 py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mb-4">
-        Ready to see the work?
+        {footerHeading}
       </h2>
       <p class="text-stone-600 dark:text-stone-400 mb-8 max-w-xl mx-auto">
-        Explore my portfolio of credits, photos, and interviews from over four decades in television production.
+        {footerParagraph}
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <a
-          href="/work"
+          href={primaryCtaHref}
           class="px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold text-base transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 active:scale-[0.98]"
         >
-          See My Work
+          {primaryCtaLabel}
         </a>
         <a
-          href="/connect"
+          href={secondaryCtaHref}
           class="px-8 py-4 bg-stone-200 dark:bg-stone-700 text-stone-900 dark:text-white rounded-lg font-semibold text-base transition-all duration-200 hover:bg-stone-300 dark:hover:bg-stone-600 active:scale-[0.98]"
         >
-          Get in Touch
+          {secondaryCtaLabel}
         </a>
       </div>
     </div>

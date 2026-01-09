@@ -26,6 +26,9 @@ export default defineConfig({
             tone: 'caution',
             locations: [
               { title: 'Home', href: '/?preview=true' },
+              { title: 'Story', href: '/story?preview=true' },
+              { title: 'Work', href: '/work?preview=true' },
+              { title: 'Attaboys', href: '/attaboys?preview=true' },
               { title: 'Connect', href: '/connect?preview=true' },
             ],
           }),

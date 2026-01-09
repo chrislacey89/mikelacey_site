@@ -6,20 +6,26 @@ import AttaboysSection from '../components/attaboys/Attaboys.astro';
 // Detect preview mode from URL (Sanity Presentation tool)
 const preview = Astro.url.searchParams.has('preview') || Astro.url.searchParams.has('sanity-preview');
 
-// Fetch testimonials from Sanity
-const testimonials = await loadQuery<any[]>({
-  preview,
-  query: `
-    *[_type == "testimonial"] {
-      "id": _id,
-      "src": image.asset->url,
-      "alt": image.alt,
-      caption
-    }
-  `
-});
+// Fetch testimonials and page content from Sanity
+const [testimonials, pageContent] = await Promise.all([
+  loadQuery<any[]>({
+    preview,
+    query: `
+      *[_type == "testimonial"] {
+        "id": _id,
+        "src": image.asset->url,
+        "alt": image.alt,
+        caption
+      }
+    `
+  }),
+  loadQuery<any>({
+    preview,
+    query: `*[_type == "siteSettings"][0].attaboysPage`
+  })
+]);
 ---
 
 <BaseLayout title="Attaboys - Mike Lacey">
-  <AttaboysSection testimonials={testimonials} />
+  <AttaboysSection testimonials={testimonials} pageContent={pageContent} />
 </BaseLayout>

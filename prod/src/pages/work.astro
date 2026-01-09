@@ -6,8 +6,8 @@ import WorkSection from '../components/work/Work.astro';
 // Detect preview mode from URL (Sanity Presentation tool)
 const preview = Astro.url.searchParams.has('preview') || Astro.url.searchParams.has('sanity-preview');
 
-// Fetch work data from Sanity
-const [credits, photos, interviews] = await Promise.all([
+// Fetch work data and page content from Sanity
+const [credits, photos, interviews, pageContent] = await Promise.all([
   loadQuery<any[]>({
     preview,
     query: `
@@ -39,6 +39,10 @@ const [credits, photos, interviews] = await Promise.all([
         youtubeUrl
       }
     `
+  }),
+  loadQuery<any>({
+    preview,
+    query: `*[_type == "siteSettings"][0].workPage`
   })
 ]);
 ---
@@ -48,5 +52,6 @@ const [credits, photos, interviews] = await Promise.all([
     credits={credits}
     photos={photos}
     interviews={interviews}
+    pageContent={pageContent}
   />
 </BaseLayout>

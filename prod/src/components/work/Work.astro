@@ -4,13 +4,41 @@ import CreditsGrid from './CreditsGrid.astro';
 import PhotoGallery from './PhotoGallery.tsx';
 import VideoInterviews from './VideoInterviews.astro';
 
+interface PageContent {
+  eyebrow?: string;
+  title?: string;
+  intro?: string;
+  creditsHeading?: string;
+  photosHeading?: string;
+  videosHeading?: string;
+  footer?: {
+    heading?: string;
+    paragraph?: string;
+    ctaLabel?: string;
+    ctaHref?: string;
+  };
+}
+
 interface Props {
   credits: Credit[];
   photos: Photo[];
   interviews: Interview[];
+  pageContent?: PageContent;
 }
 
-const { credits, photos, interviews } = Astro.props;
+const { credits, photos, interviews, pageContent } = Astro.props;
+
+// Defaults for page content
+const eyebrow = pageContent?.eyebrow || 'Portfolio';
+const title = pageContent?.title || 'My Work';
+const intro = pageContent?.intro || 'Years of television production — from camera operation to directing major sports and entertainment broadcasts.';
+const creditsHeading = pageContent?.creditsHeading || 'Production Credits';
+const photosHeading = pageContent?.photosHeading || 'Behind the Scenes';
+const videosHeading = pageContent?.videosHeading || 'Video Interviews';
+const footerHeading = pageContent?.footer?.heading || "Let's Collaborate";
+const footerParagraph = pageContent?.footer?.paragraph || "Looking for an experienced director for your next production? I'd love to hear about your project.";
+const ctaLabel = pageContent?.footer?.ctaLabel || 'Get in Touch';
+const ctaHref = pageContent?.footer?.ctaHref || '/connect';
 ---
 
 <div class="min-h-screen bg-stone-50 dark:bg-stone-900">
@@ -19,13 +47,13 @@ const { credits, photos, interviews } = Astro.props;
     <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-stone-50 to-amber-50/30 dark:from-stone-900 dark:via-stone-900 dark:to-blue-950/20"></div>
     <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <p class="text-amber-600 dark:text-amber-400 font-medium tracking-wide uppercase text-sm mb-4">
-        Portfolio
+        {eyebrow}
       </p>
       <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-stone-900 dark:text-white mb-6 leading-tight">
-        My Work
+        {title}
       </h1>
       <p class="text-lg sm:text-xl text-stone-600 dark:text-stone-400 max-w-2xl mx-auto leading-relaxed">
-        Years of television production — from camera operation to directing major sports and entertainment broadcasts.
+        {intro}
       </p>
     </div>
   </header>
@@ -34,7 +62,7 @@ const { credits, photos, interviews } = Astro.props;
     <!-- Credits Section -->
     <section>
       <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mb-8">
-        Production Credits
+        {creditsHeading}
       </h2>
       <CreditsGrid credits={credits} />
     </section>
@@ -42,7 +70,7 @@ const { credits, photos, interviews } = Astro.props;
     <!-- Photos Section -->
     <section>
       <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mb-8">
-        Behind the Scenes
+        {photosHeading}
       </h2>
       <PhotoGallery client:visible photos={photos} />
     </section>
@@ -50,7 +78,7 @@ const { credits, photos, interviews } = Astro.props;
     <!-- Videos Section -->
     <section>
       <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mb-8">
-        Video Interviews
+        {videosHeading}
       </h2>
       <VideoInterviews interviews={interviews} />
     </section>
@@ -60,16 +88,16 @@ const { credits, photos, interviews } = Astro.props;
   <footer class="bg-stone-100 dark:bg-stone-800/50 py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mb-4">
-        Let's Collaborate
+        {footerHeading}
       </h2>
       <p class="text-stone-600 dark:text-stone-400 mb-8 max-w-xl mx-auto">
-        Looking for an experienced director for your next production? I'd love to hear about your project.
+        {footerParagraph}
       </p>
       <a
-        href="/connect"
+        href={ctaHref}
         class="inline-block px-8 py-4 bg-blue-600 text-white rounded-lg font-semibold text-base transition-all duration-200 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/25 active:scale-[0.98]"
       >
-        Get in Touch
+        {ctaLabel}
       </a>
     </div>
   </footer>

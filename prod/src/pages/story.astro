@@ -6,21 +6,27 @@ import StorySection from '../components/story/Story.astro';
 // Detect preview mode from URL (Sanity Presentation tool)
 const preview = Astro.url.searchParams.has('preview') || Astro.url.searchParams.has('sanity-preview');
 
-// Fetch timeline events from Sanity
-const timelineEvents = await loadQuery<any[]>({
-  preview,
-  query: `
-    *[_type == "timelineEvent"] | order(order asc) {
-      "id": _id,
-      year,
-      title,
-      narrative,
-      "photo": photo.asset->url
-    }
-  `
-});
+// Fetch timeline events and page content from Sanity
+const [timelineEvents, pageContent] = await Promise.all([
+  loadQuery<any[]>({
+    preview,
+    query: `
+      *[_type == "timelineEvent"] | order(order asc) {
+        "id": _id,
+        year,
+        title,
+        narrative,
+        "photo": photo.asset->url
+      }
+    `
+  }),
+  loadQuery<any>({
+    preview,
+    query: `*[_type == "siteSettings"][0].storyPage`
+  })
+]);
 ---
 
 <BaseLayout title="My Story - Mike Lacey">
-  <StorySection timelineEvents={timelineEvents} />
+  <StorySection timelineEvents={timelineEvents} pageContent={pageContent} />
 </BaseLayout>
