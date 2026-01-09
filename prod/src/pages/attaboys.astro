@@ -3,8 +3,12 @@ import { loadQuery } from '../lib/loadQuery';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import AttaboysSection from '../components/attaboys/Attaboys.astro';
 
+// Detect preview mode from URL (Sanity Presentation tool)
+const preview = Astro.url.searchParams.has('preview') || Astro.url.searchParams.has('sanity-preview');
+
 // Fetch testimonials from Sanity
 const testimonials = await loadQuery<any[]>({
+  preview,
   query: `
     *[_type == "testimonial"] {
       "id": _id,

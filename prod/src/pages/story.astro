@@ -3,8 +3,12 @@ import { loadQuery } from '../lib/loadQuery';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import StorySection from '../components/story/Story.astro';
 
+// Detect preview mode from URL (Sanity Presentation tool)
+const preview = Astro.url.searchParams.has('preview') || Astro.url.searchParams.has('sanity-preview');
+
 // Fetch timeline events from Sanity
 const timelineEvents = await loadQuery<any[]>({
+  preview,
   query: `
     *[_type == "timelineEvent"] | order(order asc) {
       "id": _id,

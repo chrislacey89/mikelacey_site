@@ -1,31 +1,32 @@
 import { type QueryParams } from 'sanity'
 import { sanityClient } from 'sanity:client'
 
-const visualEditingEnabled = import.meta.env.PUBLIC_SANITY_VISUAL_EDITING_ENABLED === 'true'
 const token = import.meta.env.SANITY_API_READ_TOKEN
 
 export async function loadQuery<T>({
   query,
   params,
+  preview = false,
 }: {
   query: string
   params?: QueryParams
+  preview?: boolean
 }): Promise<T> {
-  if (visualEditingEnabled && !token) {
+  if (preview && !token) {
     throw new Error(
       'The `SANITY_API_READ_TOKEN` environment variable is required during Visual Editing.',
     )
   }
 
-  const perspective = visualEditingEnabled ? 'drafts' : 'published'
+  const perspective = preview ? 'drafts' : 'published'
 
   const { result } = await sanityClient.fetch<T>(query, params ?? {}, {
     filterResponse: false,
     perspective,
-    resultSourceMap: visualEditingEnabled ? 'withKeyArraySelector' : false,
-    stega: visualEditingEnabled,
-    ...(visualEditingEnabled ? { token } : {}),
-    useCdn: !visualEditingEnabled,
+    resultSourceMap: preview ? 'withKeyArraySelector' : false,
+    stega: preview,
+    ...(preview ? { token } : {}),
+    useCdn: !preview,
   })
 
   return result

@@ -10,7 +10,7 @@ import sanity from '@sanity/astro';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.themikelacey.com',
-  output: 'static',
+  output: 'server',
   adapter: vercel(),
   prefetch: {
     prefetchAll: true

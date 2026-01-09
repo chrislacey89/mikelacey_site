@@ -14,7 +14,10 @@ export default defineConfig({
   plugins: [
     structureTool(),
     presentationTool({
-      previewUrl: 'https://www.themikelacey.com',
+      previewUrl: {
+        origin: 'https://www.themikelacey.com',
+        preview: '/?preview=true',
+      },
       resolve: {
         locations: {
           // Site settings affect all pages
@@ -22,43 +25,43 @@ export default defineConfig({
             message: 'This document is used on all pages',
             tone: 'caution',
             locations: [
-              { title: 'Home', href: '/' },
-              { title: 'Connect', href: '/connect' },
+              { title: 'Home', href: '/?preview=true' },
+              { title: 'Connect', href: '/connect?preview=true' },
             ],
           }),
           // Credits appear on the Work page
           credit: defineLocations({
             select: { name: 'name' },
             resolve: (doc) => ({
-              locations: [{ title: doc?.name || 'Credit', href: '/work' }],
+              locations: [{ title: doc?.name || 'Credit', href: '/work?preview=true' }],
             }),
           }),
           // Photos appear on the Work page
           photo: defineLocations({
             select: { caption: 'image.caption' },
             resolve: (doc) => ({
-              locations: [{ title: doc?.caption || 'Photo', href: '/work' }],
+              locations: [{ title: doc?.caption || 'Photo', href: '/work?preview=true' }],
             }),
           }),
           // Interviews appear on the Work page
           interview: defineLocations({
             select: { title: 'title' },
             resolve: (doc) => ({
-              locations: [{ title: doc?.title || 'Interview', href: '/work' }],
+              locations: [{ title: doc?.title || 'Interview', href: '/work?preview=true' }],
             }),
           }),
           // Timeline events appear on the Story page
           timelineEvent: defineLocations({
             select: { title: 'title', year: 'year' },
             resolve: (doc) => ({
-              locations: [{ title: `${doc?.year}: ${doc?.title}` || 'Event', href: '/story' }],
+              locations: [{ title: `${doc?.year}: ${doc?.title}` || 'Event', href: '/story?preview=true' }],
             }),
           }),
           // Testimonials appear on the Attaboys page
           testimonial: defineLocations({
             select: { caption: 'caption' },
             resolve: (doc) => ({
-              locations: [{ title: doc?.caption || 'Testimonial', href: '/attaboys' }],
+              locations: [{ title: doc?.caption || 'Testimonial', href: '/attaboys?preview=true' }],
             }),
           }),
         },
