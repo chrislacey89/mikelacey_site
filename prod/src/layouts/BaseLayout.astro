@@ -1,5 +1,6 @@
 ---
 import MainNav from '../components/shell/MainNav.tsx';
+import { VisualEditing } from '@sanity/astro/visual-editing';
 import '../styles/global.css';
 
 interface Props {
@@ -13,6 +14,9 @@ const {
   description = 'Television director specializing in sports and entertainment production.',
   ogImage
 } = Astro.props;
+
+// Enable visual editing when viewed in Sanity Studio's presentation tool
+const visualEditingEnabled = Astro.url.searchParams.has('sanity-preview');
 
 const siteUrl = (import.meta.env.VERCEL_ENV !== 'production' && import.meta.env.VERCEL_URL)
   ? `https://${import.meta.env.VERCEL_URL}`
@@ -64,5 +68,6 @@ const navItems = [
     <main>
       <slot />
     </main>
+    <VisualEditing />
   </body>
 </html>
