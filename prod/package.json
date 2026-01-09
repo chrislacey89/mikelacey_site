@@ -6,11 +6,14 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "migrate": "tsx scripts/migrate-to-sanity.ts"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
     "@astrojs/vercel": "^9.0.2",
+    "@sanity/astro": "^3.2.11",
+    "@sanity/client": "^7.14.0",
     "@tailwindcss/vite": "^4.1.18",
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.2.7",
@@ -20,7 +23,11 @@
     "qrcode": "^1.5.4",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "sanity": "^5.2.0",
     "sharp": "^0.34.5",
     "tailwindcss": "^4.1.18"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
   }
 }

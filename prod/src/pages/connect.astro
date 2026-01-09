@@ -1,4 +1,5 @@
 ---
+import { sanityClient } from 'sanity:client';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ConnectSection from '../components/connect/Connect.astro';
 import connectData from '../data/connect.json';
@@ -6,15 +7,30 @@ import type { ProfessionalLink } from '../types';
 
 const FORMSPREE_ID = 'mlgednnn';
 
-const professionalLinks = connectData.professionalLinks as ProfessionalLink[];
+// Fetch contact data from Sanity
+const settings = await sanityClient.fetch(`
+  *[_type == "siteSettings"][0] {
+    contactInfo,
+    professionalLinks[] {
+      "id": _key,
+      type,
+      label,
+      url,
+      icon
+    },
+    sectionContent
+  }
+`);
+
+const professionalLinks = (settings?.professionalLinks || []) as ProfessionalLink[];
 ---
 
 <BaseLayout title="Connect - Mike Lacey">
   <ConnectSection
-    contactInfo={connectData.contactInfo}
+    contactInfo={settings?.contactInfo || connectData.contactInfo}
     professionalLinks={professionalLinks}
     formFields={connectData.formFields}
-    sectionContent={connectData.sectionContent}
+    sectionContent={settings?.sectionContent || connectData.sectionContent}
     formspreeId={FORMSPREE_ID}
   />
 </BaseLayout>

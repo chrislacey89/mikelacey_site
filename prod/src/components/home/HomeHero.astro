@@ -1,26 +1,27 @@
 ---
 import { Image, getImage } from 'astro:assets';
 import type { Hero, Profile, CTA } from '../../types';
-import headshotImage from '../../assets/images/headshot.jpeg';
-import backgroundImage from '../../assets/images/background.jpeg';
+import localHeadshotImage from '../../assets/images/headshot.jpeg';
+import localBackgroundImage from '../../assets/images/background.jpeg';
 
 interface Props {
-  hero: Hero;
-  profile: Profile;
+  hero: Hero & { backgroundImage?: string };
+  profile: Profile & { headshotImage?: string };
   ctas: CTA[];
 }
 
 const { hero, profile, ctas } = Astro.props;
 
-// Get optimized background image
-const optimizedBg = await getImage({ src: backgroundImage, format: 'webp', quality: 80 });
+// Use Sanity CDN URL if available, otherwise use local optimized image
+const backgroundImageUrl = hero?.backgroundImage || (await getImage({ src: localBackgroundImage, format: 'webp', quality: 80 })).src;
+const headshotImageUrl = profile?.headshotImage;
 ---
 
 <section class="relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
   <!-- Background Image with Overlay -->
   <div
     class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-    style={`background-image: url(${optimizedBg.src})`}
+    style={`background-image: url(${backgroundImageUrl})`}
   >
     <!-- Gradient overlay - lighter on left to show production rundown -->
     <div class="absolute inset-0 bg-gradient-to-r from-stone-950/70 via-stone-950/60 to-stone-950/50 dark:from-stone-950/80 dark:via-stone-950/70 dark:to-stone-950/60"></div>
@@ -83,16 +84,27 @@ const optimizedBg = await getImage({ src: backgroundImage, format: 'webp', quali
 
           <!-- Headshot container -->
           <div class="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden border-4 border-white/10 shadow-2xl">
-            <Image
-              src={headshotImage}
-              alt={profile.name}
-              width={768}
-              height={768}
-              format="webp"
-              quality={90}
-              class="w-full h-full object-cover"
-              loading="eager"
-            />
+            {headshotImageUrl ? (
+              <img
+                src={headshotImageUrl}
+                alt={profile.name}
+                width={768}
+                height={768}
+                class="w-full h-full object-cover"
+                loading="eager"
+              />
+            ) : (
+              <Image
+                src={localHeadshotImage}
+                alt={profile.name}
+                width={768}
+                height={768}
+                format="webp"
+                quality={90}
+                class="w-full h-full object-cover"
+                loading="eager"
+              />
+            )}
             <!-- Subtle inner shadow for depth -->
             <div class="absolute inset-0 rounded-full shadow-inner"></div>
           </div>

@@ -1,34 +1,19 @@
 ---
-import { getImage } from 'astro:assets';
+import { sanityClient } from 'sanity:client';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import AttaboysSection from '../components/attaboys/Attaboys.astro';
-import attaboysData from '../data/attaboys.json';
 
-// Import all attaboy images from the artifacts directory
-const imageModules = import.meta.glob<{ default: ImageMetadata }>(
-  '/public/artifacts/at_a_boys/*.{jpg,jpeg,png}',
-  { eager: true }
-);
-
-// Pre-optimize all testimonial images at build time
-const optimizedTestimonials = await Promise.all(
-  attaboysData.testimonials.map(async (testimonial) => {
-    const imagePath = `/public${testimonial.src}`;
-    const imageModule = imageModules[imagePath];
-
-    if (imageModule) {
-      const optimized = await getImage({
-        src: imageModule.default,
-        format: 'webp',
-        quality: 80,
-      });
-      return { ...testimonial, src: optimized.src };
-    }
-    return testimonial;
-  })
-);
+// Fetch testimonials from Sanity
+const testimonials = await sanityClient.fetch(`
+  *[_type == "testimonial"] {
+    "id": _id,
+    "src": image.asset->url,
+    "alt": image.alt,
+    caption
+  }
+`);
 ---
 
 <BaseLayout title="Attaboys - Mike Lacey">
-  <AttaboysSection testimonials={optimizedTestimonials} />
+  <AttaboysSection testimonials={testimonials} />
 </BaseLayout>

@@ -1,9 +1,20 @@
 ---
+import { sanityClient } from 'sanity:client';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import StorySection from '../components/story/Story.astro';
-import storyData from '../data/story.json';
+
+// Fetch timeline events from Sanity
+const timelineEvents = await sanityClient.fetch(`
+  *[_type == "timelineEvent"] | order(order asc) {
+    "id": _id,
+    year,
+    title,
+    narrative,
+    "photo": photo.asset->url
+  }
+`);
 ---
 
 <BaseLayout title="My Story - Mike Lacey">
-  <StorySection timelineEvents={storyData.timelineEvents} />
+  <StorySection timelineEvents={timelineEvents} />
 </BaseLayout>

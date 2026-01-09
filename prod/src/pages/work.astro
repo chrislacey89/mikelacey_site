@@ -1,38 +1,40 @@
 ---
-import { getImage } from 'astro:assets';
+import { sanityClient } from 'sanity:client';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import WorkSection from '../components/work/Work.astro';
-import workData from '../data/work.json';
 
-// Import all photos from artifacts and images directories
-const imageModules = import.meta.glob<{ default: ImageMetadata }>(
-  ['/public/artifacts/PICTURES/*.{jpg,jpeg,png}', '/public/images/*.{jpg,jpeg,png}'],
-  { eager: true }
-);
-
-// Pre-optimize all photos at build time
-const optimizedPhotos = await Promise.all(
-  workData.photos.map(async (photo) => {
-    const imagePath = `/public${photo.src}`;
-    const imageModule = imageModules[imagePath];
-
-    if (imageModule) {
-      const optimized = await getImage({
-        src: imageModule.default,
-        format: 'webp',
-        quality: 80,
-      });
-      return { ...photo, src: optimized.src };
+// Fetch work data from Sanity
+const [credits, photos, interviews] = await Promise.all([
+  sanityClient.fetch(`
+    *[_type == "credit"] | order(name asc) {
+      "id": _id,
+      name,
+      network
     }
-    return photo;
-  })
-);
+  `),
+  sanityClient.fetch(`
+    *[_type == "photo"] {
+      "id": _id,
+      "src": image.asset->url,
+      "alt": image.alt,
+      "caption": image.caption
+    }
+  `),
+  sanityClient.fetch(`
+    *[_type == "interview"] {
+      "id": _id,
+      title,
+      description,
+      youtubeUrl
+    }
+  `)
+]);
 ---
 
 <BaseLayout title="My Work - Mike Lacey">
   <WorkSection
-    credits={workData.credits}
-    photos={optimizedPhotos}
-    interviews={workData.interviews}
+    credits={credits}
+    photos={photos}
+    interviews={interviews}
   />
 </BaseLayout>
