@@ -2,6 +2,7 @@ import { type QueryParams } from 'sanity'
 import { sanityClient } from 'sanity:client'
 
 const token = import.meta.env.SANITY_API_READ_TOKEN
+const studioUrl = 'https://www.themikelacey.com/studio'
 
 export async function loadQuery<T>({
   query,
@@ -24,7 +25,7 @@ export async function loadQuery<T>({
     filterResponse: false,
     perspective,
     resultSourceMap: preview ? 'withKeyArraySelector' : false,
-    stega: preview,
+    stega: preview ? { enabled: true, studioUrl } : false,
     ...(preview ? { token } : {}),
     useCdn: !preview,
   })
