@@ -1,17 +1,19 @@
 ---
-import { sanityClient } from 'sanity:client';
+import { loadQuery } from '../lib/loadQuery';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import AttaboysSection from '../components/attaboys/Attaboys.astro';
 
 // Fetch testimonials from Sanity
-const testimonials = await sanityClient.fetch(`
-  *[_type == "testimonial"] {
-    "id": _id,
-    "src": image.asset->url,
-    "alt": image.alt,
-    caption
-  }
-`);
+const testimonials = await loadQuery<any[]>({
+  query: `
+    *[_type == "testimonial"] {
+      "id": _id,
+      "src": image.asset->url,
+      "alt": image.alt,
+      caption
+    }
+  `
+});
 ---
 
 <BaseLayout title="Attaboys - Mike Lacey">

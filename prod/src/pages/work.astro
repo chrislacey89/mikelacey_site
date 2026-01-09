@@ -1,33 +1,39 @@
 ---
-import { sanityClient } from 'sanity:client';
+import { loadQuery } from '../lib/loadQuery';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import WorkSection from '../components/work/Work.astro';
 
 // Fetch work data from Sanity
 const [credits, photos, interviews] = await Promise.all([
-  sanityClient.fetch(`
-    *[_type == "credit"] | order(name asc) {
-      "id": _id,
-      name,
-      network
-    }
-  `),
-  sanityClient.fetch(`
-    *[_type == "photo"] {
-      "id": _id,
-      "src": image.asset->url,
-      "alt": image.alt,
-      "caption": image.caption
-    }
-  `),
-  sanityClient.fetch(`
-    *[_type == "interview"] {
-      "id": _id,
-      title,
-      description,
-      youtubeUrl
-    }
-  `)
+  loadQuery<any[]>({
+    query: `
+      *[_type == "credit"] | order(name asc) {
+        "id": _id,
+        name,
+        network
+      }
+    `
+  }),
+  loadQuery<any[]>({
+    query: `
+      *[_type == "photo"] {
+        "id": _id,
+        "src": image.asset->url,
+        "alt": image.alt,
+        "caption": image.caption
+      }
+    `
+  }),
+  loadQuery<any[]>({
+    query: `
+      *[_type == "interview"] {
+        "id": _id,
+        title,
+        description,
+        youtubeUrl
+      }
+    `
+  })
 ]);
 ---
 

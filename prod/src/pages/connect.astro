@@ -1,5 +1,5 @@
 ---
-import { sanityClient } from 'sanity:client';
+import { loadQuery } from '../lib/loadQuery';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ConnectSection from '../components/connect/Connect.astro';
 import connectData from '../data/connect.json';
@@ -8,19 +8,21 @@ import type { ProfessionalLink } from '../types';
 const FORMSPREE_ID = 'mlgednnn';
 
 // Fetch contact data from Sanity
-const settings = await sanityClient.fetch(`
-  *[_type == "siteSettings"][0] {
-    contactInfo,
-    professionalLinks[] {
-      "id": _key,
-      type,
-      label,
-      url,
-      icon
-    },
-    sectionContent
-  }
-`);
+const settings = await loadQuery<any>({
+  query: `
+    *[_type == "siteSettings"][0] {
+      contactInfo,
+      professionalLinks[] {
+        "id": _key,
+        type,
+        label,
+        url,
+        icon
+      },
+      sectionContent
+    }
+  `
+});
 
 const professionalLinks = (settings?.professionalLinks || []) as ProfessionalLink[];
 ---

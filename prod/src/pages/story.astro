@@ -1,18 +1,20 @@
 ---
-import { sanityClient } from 'sanity:client';
+import { loadQuery } from '../lib/loadQuery';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import StorySection from '../components/story/Story.astro';
 
 // Fetch timeline events from Sanity
-const timelineEvents = await sanityClient.fetch(`
-  *[_type == "timelineEvent"] | order(order asc) {
-    "id": _id,
-    year,
-    title,
-    narrative,
-    "photo": photo.asset->url
-  }
-`);
+const timelineEvents = await loadQuery<any[]>({
+  query: `
+    *[_type == "timelineEvent"] | order(order asc) {
+      "id": _id,
+      year,
+      title,
+      narrative,
+      "photo": photo.asset->url
+    }
+  `
+});
 ---
 
 <BaseLayout title="My Story - Mike Lacey">

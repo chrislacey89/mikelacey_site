@@ -1,31 +1,33 @@
 ---
-import { sanityClient } from 'sanity:client';
+import { loadQuery } from '../lib/loadQuery';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HomeHero from '../components/home/HomeHero.astro';
 import type { CTA } from '../types';
 
 // Fetch site settings from Sanity
-const settings = await sanityClient.fetch(`
-  *[_type == "siteSettings"][0] {
-    hero {
-      "backgroundImage": backgroundImage.asset->url,
-      headline,
-      tagline
-    },
-    profile {
-      name,
-      title,
-      "headshotImage": headshotImage.asset->url,
-      subtitle
-    },
-    ctas[] {
-      "id": _key,
-      label,
-      href,
-      variant
+const settings = await loadQuery<any>({
+  query: `
+    *[_type == "siteSettings"][0] {
+      hero {
+        "backgroundImage": backgroundImage.asset->url,
+        headline,
+        tagline
+      },
+      profile {
+        name,
+        title,
+        "headshotImage": headshotImage.asset->url,
+        subtitle
+      },
+      ctas[] {
+        "id": _key,
+        label,
+        href,
+        variant
+      }
     }
-  }
-`);
+  `
+});
 
 const ctas: CTA[] = (settings?.ctas || []).map((cta: { id: string; label: string; href: string; variant: string }) => {
   if (cta.variant !== 'primary' && cta.variant !== 'secondary') {
