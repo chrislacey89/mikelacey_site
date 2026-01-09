@@ -1,5 +1,6 @@
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
+import { presentationTool, defineLocations } from 'sanity/presentation'
 import { schemaTypes } from './sanity/schemaTypes'
 
 const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || 'yi6f32nh'
@@ -10,7 +11,60 @@ export default defineConfig({
   title: 'Mike Lacey Portfolio',
   projectId,
   dataset,
-  plugins: [structureTool()],
+  plugins: [
+    structureTool(),
+    presentationTool({
+      previewUrl: 'https://www.themikelacey.com',
+      resolve: {
+        locations: {
+          // Site settings affect all pages
+          siteSettings: defineLocations({
+            message: 'This document is used on all pages',
+            tone: 'caution',
+            locations: [
+              { title: 'Home', href: '/' },
+              { title: 'Connect', href: '/connect' },
+            ],
+          }),
+          // Credits appear on the Work page
+          credit: defineLocations({
+            select: { name: 'name' },
+            resolve: (doc) => ({
+              locations: [{ title: doc?.name || 'Credit', href: '/work' }],
+            }),
+          }),
+          // Photos appear on the Work page
+          photo: defineLocations({
+            select: { caption: 'image.caption' },
+            resolve: (doc) => ({
+              locations: [{ title: doc?.caption || 'Photo', href: '/work' }],
+            }),
+          }),
+          // Interviews appear on the Work page
+          interview: defineLocations({
+            select: { title: 'title' },
+            resolve: (doc) => ({
+              locations: [{ title: doc?.title || 'Interview', href: '/work' }],
+            }),
+          }),
+          // Timeline events appear on the Story page
+          timelineEvent: defineLocations({
+            select: { title: 'title', year: 'year' },
+            resolve: (doc) => ({
+              locations: [{ title: `${doc?.year}: ${doc?.title}` || 'Event', href: '/story' }],
+            }),
+          }),
+          // Testimonials appear on the Attaboys page
+          testimonial: defineLocations({
+            select: { caption: 'caption' },
+            resolve: (doc) => ({
+              locations: [{ title: doc?.caption || 'Testimonial', href: '/attaboys' }],
+            }),
+          }),
+        },
+      },
+    }),
+  ],
   schema: {
     types: schemaTypes,
   },
