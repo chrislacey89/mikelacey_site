@@ -27,7 +27,9 @@ export interface Interview {
   id: string
   title: string
   description: string
-  youtubeUrl: string
+  videoType: 'youtube' | 'direct'
+  youtubeUrl?: string
+  directVideoUrl?: string
 }
 
 export interface Testimonial {
