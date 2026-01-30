@@ -246,6 +246,8 @@ export default function PhotoGallery({ photos }: PhotoGalleryProps) {
         .photo-wrapper {
           position: relative;
           overflow: hidden;
+          min-height: 200px;
+          background: #f5f5f5;
         }
 
         :global(.dark) .photo-container {
