@@ -8,14 +8,23 @@ interface PhotoGalleryProps {
 
 export default function PhotoGallery({ photos }: PhotoGalleryProps) {
   const [selectedPhoto, setSelectedPhoto] = useState<{ photo: Photo; index: number } | null>(null);
-  const [loupePosition, setLoupePosition] = useState({ x: 0, y: 0, visible: false, photoId: '' });
+  const [loupePosition, setLoupePosition] = useState({ x: 0, y: 0, imgWidth: 0, imgHeight: 0, visible: false, photoId: '' });
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>, photoId: string) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setLoupePosition({ x, y, visible: true, photoId });
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>, photoId: string) => {
+    const img = e.currentTarget.querySelector('img');
+    if (!img) return;
+
+    const imgRect = img.getBoundingClientRect();
+    const x = e.clientX - imgRect.left;
+    const y = e.clientY - imgRect.top;
+
+    // Only show loupe when hovering over the actual image
+    if (x >= 0 && x <= imgRect.width && y >= 0 && y <= imgRect.height) {
+      setLoupePosition({ x, y, imgWidth: imgRect.width, imgHeight: imgRect.height, visible: true, photoId });
+    } else {
+      setLoupePosition(prev => ({ ...prev, visible: false }));
+    }
   };
 
   const handleMouseLeave = () => {
@@ -47,8 +56,6 @@ export default function PhotoGallery({ photos }: PhotoGalleryProps) {
                 {/* Main frame */}
                 <button
                   onClick={() => setSelectedPhoto({ photo, index: index + 1 })}
-                  onMouseMove={(e) => handleMouseMove(e, photo.id)}
-                  onMouseLeave={handleMouseLeave}
                   className="film-frame"
                 >
                   {/* Frame number */}
@@ -56,36 +63,42 @@ export default function PhotoGallery({ photos }: PhotoGalleryProps) {
 
                   {/* Photo container */}
                   <div className="photo-container">
-                    <img
-                      src={photo.src}
-                      alt={photo.alt}
-                      loading="lazy"
-                      decoding="async"
-                      className="contact-photo"
-                    />
-
-                    {/* Loupe magnifier */}
-                    {loupePosition.visible && loupePosition.photoId === photo.id && (
-                      <div
-                        className="loupe"
-                        style={{
-                          left: loupePosition.x - 50,
-                          top: loupePosition.y - 50,
-                          backgroundImage: `url(${photo.src})`,
-                          backgroundPosition: `${-loupePosition.x * 2 + 50}px ${-loupePosition.y * 2 + 50}px`,
-                          backgroundSize: '400%',
-                        }}
-                        aria-hidden="true"
+                    <div
+                      className="photo-wrapper"
+                      onMouseMove={(e) => handleMouseMove(e, photo.id)}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      <img
+                        src={photo.src}
+                        alt={photo.alt}
+                        loading="lazy"
+                        decoding="async"
+                        className="contact-photo"
                       />
-                    )}
 
-                    {/* Selection overlay */}
-                    <div className="selection-overlay">
+                      {/* Loupe magnifier */}
+                      {loupePosition.visible && loupePosition.photoId === photo.id && (
+                        <div
+                          className="loupe"
+                          style={{
+                            left: loupePosition.x - 50,
+                            top: loupePosition.y - 50,
+                            backgroundImage: `url(${photo.src})`,
+                            backgroundPosition: `${-loupePosition.x * 2 + 50}px ${-loupePosition.y * 2 + 50}px`,
+                            backgroundSize: `${loupePosition.imgWidth * 2}px ${loupePosition.imgHeight * 2}px`,
+                          }}
+                          aria-hidden="true"
+                        />
+                      )}
+
+                      {/* Selection overlay */}
+                      <div className="selection-overlay">
                       <div className="selection-corner tl" />
                       <div className="selection-corner tr" />
                       <div className="selection-corner bl" />
                       <div className="selection-corner br" />
                       <span className="select-text">SELECT</span>
+                    </div>
                     </div>
                   </div>
 
@@ -225,10 +238,13 @@ export default function PhotoGallery({ photos }: PhotoGalleryProps) {
 
         /* Photo container */
         .photo-container {
-          position: relative;
           padding: 20px 12px 8px;
           background: #fff;
           margin: 8px;
+        }
+
+        .photo-wrapper {
+          position: relative;
           overflow: hidden;
         }
 
