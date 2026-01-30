@@ -1,0 +1,106 @@
+---
+/**
+ * ViewfinderImage - Image wrapper with director's viewfinder overlay
+ *
+ * Wraps an image with cinematic composition guides that appear on hover.
+ * Use for standalone/hero images where the viewfinder effect adds visual interest.
+ *
+ * Usage:
+ * <ViewfinderImage src={photo.url} alt={photo.alt} scene="BTS" take="1" />
+ */
+
+import ViewfinderOverlay from './ViewfinderOverlay.astro';
+
+interface Props {
+  src: string;
+  alt: string;
+  scene?: string;
+  take?: string;
+  aspectRatio?: '16:9' | '2.39:1' | '4:3' | 'auto';
+  class?: string;
+  caption?: string;
+  lazy?: boolean;
+}
+
+const {
+  src,
+  alt,
+  scene = 'BTS',
+  take = '1',
+  aspectRatio = 'auto',
+  class: className = '',
+  caption,
+  lazy = true,
+} = Astro.props;
+---
+
+<figure class={`viewfinder-image-wrapper ${className}`.trim()}>
+  <div class="viewfinder-container">
+    <img
+      src={src}
+      alt={alt}
+      loading={lazy ? 'lazy' : 'eager'}
+      decoding="async"
+      class="viewfinder-img"
+    />
+    <ViewfinderOverlay
+      scene={scene}
+      take={take}
+      aspectRatio={aspectRatio}
+    />
+  </div>
+  {caption && (
+    <figcaption class="viewfinder-caption">
+      <span class="caption-text">{caption}</span>
+    </figcaption>
+  )}
+</figure>
+
+<style>
+  .viewfinder-image-wrapper {
+    display: block;
+    margin: 0;
+  }
+
+  .viewfinder-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 4px;
+    cursor: crosshair;
+  }
+
+  .viewfinder-img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 0.3s ease;
+  }
+
+  .viewfinder-container:hover .viewfinder-img {
+    transform: scale(1.02);
+  }
+
+  .viewfinder-caption {
+    font-family: var(--font-mono);
+    margin-top: 0.75rem;
+    text-align: center;
+  }
+
+  .caption-text {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: #78716c;
+    text-transform: uppercase;
+  }
+
+  :global(.dark) .caption-text {
+    color: #a8a29e;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .viewfinder-container:hover .viewfinder-img {
+      transform: none;
+    }
+  }
+</style>

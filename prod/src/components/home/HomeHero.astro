@@ -3,6 +3,7 @@ import { Image, getImage } from 'astro:assets';
 import type { Hero, Profile, CTA } from '../../types';
 import localHeadshotImage from '../../assets/images/headshot.jpeg';
 import localBackgroundImage from '../../assets/images/background.jpeg';
+import BroadcastLowerThird from './BroadcastLowerThird.astro';
 
 interface Props {
   hero: Hero & { backgroundImage?: string };
@@ -42,14 +43,9 @@ const headshotImageUrl = profile?.headshotImage;
           {hero.headline}
         </h1>
 
-        <!-- Name & Title -->
+        <!-- Broadcast Lower Third -->
         <div class="mb-6">
-          <p class="text-2xl sm:text-3xl font-semibold text-white">
-            {profile.name}
-          </p>
-          <p class="text-lg text-stone-300">
-            {profile.title}
-          </p>
+          <BroadcastLowerThird name={profile.name} title={profile.title} />
         </div>
 
         <!-- Tagline -->

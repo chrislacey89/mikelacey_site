@@ -1,0 +1,361 @@
+---
+interface Props {
+  name: string;
+  title: string;
+  showLive?: boolean;
+}
+
+const { name, title, showLive = true } = Astro.props;
+---
+
+<div class="lower-third" role="region" aria-label="Broadcast introduction">
+  <!-- LIVE Indicator -->
+  {showLive && (
+    <div class="live-indicator" aria-label="Live broadcast indicator">
+      <span class="live-dot" aria-hidden="true"></span>
+      <span class="live-text">LIVE</span>
+    </div>
+  )}
+
+  <!-- Lower Third Container -->
+  <div class="lt-container">
+    <!-- Gold accent bar -->
+    <div class="lt-accent-bar" aria-hidden="true">
+      <div class="lt-shimmer"></div>
+    </div>
+
+    <!-- Content area -->
+    <div class="lt-content">
+      <div class="lt-name-wrapper">
+        <span class="lt-name">{name}</span>
+      </div>
+      <div class="lt-title-wrapper">
+        <span class="lt-title">{title}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Optional timecode -->
+  <div class="lt-timecode" aria-hidden="true">
+    <span class="timecode-value">00:00:00:00</span>
+  </div>
+</div>
+
+<style>
+  .lower-third {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    margin-top: 1rem;
+  }
+
+  /* LIVE Indicator */
+  .live-indicator {
+    position: absolute;
+    top: -2.5rem;
+    right: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 4px;
+    opacity: 0;
+    animation: lt-fade-in 0.4s ease-out 1.8s forwards;
+  }
+
+  .live-dot {
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    animation: pulse-dot 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: scale(0.85);
+    }
+  }
+
+  .live-text {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: #ef4444;
+  }
+
+  /* Lower Third Container */
+  .lt-container {
+    display: flex;
+    align-items: stretch;
+    background: linear-gradient(
+      135deg,
+      rgba(0, 0, 0, 0.85) 0%,
+      rgba(28, 25, 23, 0.9) 100%
+    );
+    clip-path: polygon(0 0, 100% 0, 97% 100%, 0 100%);
+    transform: translateX(-120%);
+    animation: lt-slide-in 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s forwards;
+  }
+
+  @keyframes lt-slide-in {
+    from {
+      transform: translateX(-120%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  /* Gold accent bar */
+  .lt-accent-bar {
+    position: relative;
+    width: 6px;
+    background: var(--color-credits-accent);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    animation: lt-bar-grow 0.4s ease-out 0.8s forwards;
+    overflow: hidden;
+  }
+
+  @keyframes lt-bar-grow {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+
+  /* Shimmer effect */
+  .lt-shimmer {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%
+    );
+    opacity: 0;
+    animation: lt-shimmer 1s ease-in-out 2.5s forwards;
+  }
+
+  @keyframes lt-shimmer {
+    0% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateX(100%);
+    }
+  }
+
+  /* Content area */
+  .lt-content {
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  /* Name styling */
+  .lt-name-wrapper {
+    overflow: hidden;
+  }
+
+  .lt-name {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 0.02em;
+    clip-path: inset(0 100% 0 0);
+    animation: lt-reveal-text 0.3s ease-out 1.2s forwards;
+  }
+
+  @keyframes lt-reveal-text {
+    from {
+      clip-path: inset(0 100% 0 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  /* Title styling */
+  .lt-title-wrapper {
+    overflow: hidden;
+  }
+
+  .lt-title {
+    display: block;
+    font-family: var(--font-serif);
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: var(--color-credits-accent);
+    letter-spacing: 0.05em;
+    opacity: 0;
+    transform: translateY(4px);
+    animation: lt-fade-up 0.3s ease-out 1.5s forwards;
+  }
+
+  @keyframes lt-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Timecode */
+  .lt-timecode {
+    position: absolute;
+    bottom: -1.5rem;
+    left: 0;
+    opacity: 0;
+    animation: lt-fade-in 0.4s ease-out 2s forwards;
+  }
+
+  @keyframes lt-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .timecode-value {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 0.05em;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .lower-third {
+      max-width: 100%;
+    }
+
+    .lt-name {
+      font-size: 1.25rem;
+    }
+
+    .lt-title {
+      font-size: 0.75rem;
+    }
+
+    .live-indicator {
+      top: -2rem;
+      padding: 0.2rem 0.5rem;
+    }
+
+    .live-text {
+      font-size: 0.65rem;
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+    }
+  }
+
+  /* Center on mobile */
+  @media (max-width: 1024px) {
+    .lower-third {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .live-indicator {
+      right: 50%;
+      transform: translateX(50%);
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .lower-third {
+      margin-left: 0;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .lt-container,
+    .lt-accent-bar,
+    .lt-name,
+    .lt-title,
+    .lt-timecode,
+    .live-indicator,
+    .lt-shimmer {
+      animation: none;
+      transform: none;
+      opacity: 1;
+      clip-path: none;
+    }
+
+    .lt-accent-bar {
+      transform: scaleY(1);
+    }
+
+    .live-dot {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  function initTimecode() {
+    const timecodeEl = document.querySelector('.timecode-value');
+    if (!timecodeEl) return;
+
+    // Check for reduced motion preference
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      timecodeEl.textContent = '00:00:00:00';
+      return;
+    }
+
+    let frames = 0;
+    const fps = 30;
+
+    function updateTimecode() {
+      const totalSeconds = Math.floor(frames / fps);
+      const hours = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+      const minutes = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+      const seconds = (totalSeconds % 60).toString().padStart(2, '0');
+      const frameCount = (frames % fps).toString().padStart(2, '0');
+
+      timecodeEl.textContent = `${hours}:${minutes}:${seconds}:${frameCount}`;
+      frames++;
+
+      requestAnimationFrame(updateTimecode);
+    }
+
+    // Start after animation delay
+    setTimeout(updateTimecode, 2000);
+  }
+
+  // Initialize
+  initTimecode();
+
+  // Re-initialize after view transitions
+  document.addEventListener('astro:after-swap', initTimecode);
+</script>

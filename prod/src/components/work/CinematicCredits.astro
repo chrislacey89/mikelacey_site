@@ -1,0 +1,403 @@
+---
+import type { Credit } from '../../types';
+
+interface Props {
+  credits: Credit[];
+}
+
+const { credits } = Astro.props;
+
+// Calculate animation duration based on credit count (~3s per credit for comfortable reading)
+const animationDuration = Math.max(credits.length * 3 + 12, 45);
+---
+
+<section
+  class="credits-section"
+  role="region"
+  aria-label="Production Credits"
+>
+  <!-- Film grain overlay -->
+  <div class="grain-overlay" aria-hidden="true"></div>
+
+  <!-- Vignette effect -->
+  <div class="vignette" aria-hidden="true"></div>
+
+  <!-- Fade masks -->
+  <div class="fade-mask-top" aria-hidden="true"></div>
+  <div class="fade-mask-bottom" aria-hidden="true"></div>
+
+  <!-- Credits viewport -->
+  <div class="credits-viewport">
+    <div class="credits-container" style={`--animation-duration: ${animationDuration}s`}>
+      <!-- Opening spacer -->
+      <div class="credit-spacer" aria-hidden="true"></div>
+
+      {credits.map((credit) => (
+        <article class="credit-item">
+          <p class="credit-network">{credit.network}</p>
+          <h3 class="credit-name">{credit.name}</h3>
+        </article>
+      ))}
+
+      <!-- Final director credit -->
+      <article class="credit-final">
+        <p class="credit-final-label">Directed By</p>
+        <h3 class="credit-final-name">Mike Lacey</h3>
+      </article>
+
+      <!-- Closing spacer -->
+      <div class="credit-spacer" aria-hidden="true"></div>
+    </div>
+  </div>
+
+  <!-- Pause control -->
+  <button
+    class="pause-btn"
+    aria-label="Pause credits"
+    type="button"
+  >
+    <span class="pause-icon" aria-hidden="true">
+      <svg class="icon-pause" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+        <path fill-rule="evenodd" d="M6.75 5.25a.75.75 0 01.75-.75H9a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H7.5a.75.75 0 01-.75-.75V5.25zm7.5 0A.75.75 0 0115 4.5h1.5a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75H15a.75.75 0 01-.75-.75V5.25z" clip-rule="evenodd" />
+      </svg>
+      <svg class="icon-play" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+        <path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.348c1.295.712 1.295 2.573 0 3.285L7.28 19.991c-1.25.687-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd" />
+      </svg>
+    </span>
+  </button>
+</section>
+
+<style>
+  .credits-section {
+    position: relative;
+    height: 80vh;
+    min-height: 500px;
+    max-height: 900px;
+    background-color: var(--color-credits-bg);
+    overflow: hidden;
+    border-radius: 1rem;
+  }
+
+  /* Film grain overlay */
+  .grain-overlay {
+    position: absolute;
+    inset: 0;
+    opacity: 0.04;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    animation: grain 0.5s steps(10) infinite;
+  }
+
+  @keyframes grain {
+    0%, 100% { transform: translate(0, 0); }
+    10% { transform: translate(-1%, -1%); }
+    20% { transform: translate(1%, 1%); }
+    30% { transform: translate(-2%, 1%); }
+    40% { transform: translate(1%, -1%); }
+    50% { transform: translate(-1%, 2%); }
+    60% { transform: translate(2%, 1%); }
+    70% { transform: translate(1%, -2%); }
+    80% { transform: translate(-1%, 1%); }
+    90% { transform: translate(1%, 2%); }
+  }
+
+  /* Vignette effect */
+  .vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 0%,
+      transparent 50%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+  }
+
+  /* Fade masks */
+  .fade-mask-top,
+  .fade-mask-bottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 120px;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .fade-mask-top {
+    top: 0;
+    background: linear-gradient(
+      to bottom,
+      var(--color-credits-bg) 0%,
+      transparent 100%
+    );
+  }
+
+  .fade-mask-bottom {
+    bottom: 0;
+    background: linear-gradient(
+      to top,
+      var(--color-credits-bg) 0%,
+      transparent 100%
+    );
+  }
+
+  /* Credits viewport and container */
+  .credits-viewport {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+  }
+
+  .credits-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3rem;
+    padding: 0 1.5rem;
+    text-align: center;
+    animation: credits-roll var(--animation-duration) linear infinite;
+  }
+
+  @keyframes credits-roll {
+    0% { transform: translateY(20%); }
+    100% { transform: translateY(-100%); }
+  }
+
+  /* Pause animation on hover */
+  .credits-section:hover .credits-container,
+  .credits-section.paused .credits-container {
+    animation-play-state: paused;
+  }
+
+  /* Credit spacers - minimal to show credits quickly */
+  .credit-spacer {
+    height: 10vh;
+    flex-shrink: 0;
+  }
+
+  /* Individual credit items */
+  .credit-item {
+    flex-shrink: 0;
+    padding: 1rem 0;
+  }
+
+  .credit-network {
+    font-family: var(--font-serif);
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--color-credits-accent);
+    margin-bottom: 0.5rem;
+  }
+
+  .credit-name {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--color-credits-text);
+    line-height: 1.3;
+  }
+
+  /* Final director credit */
+  .credit-final {
+    flex-shrink: 0;
+    padding: 4rem 0;
+    margin-top: 2rem;
+  }
+
+  .credit-final-label {
+    font-family: var(--font-serif);
+    font-size: 0.875rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    color: var(--color-credits-accent);
+    margin-bottom: 1rem;
+  }
+
+  .credit-final-name {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 600;
+    color: var(--color-credits-accent-light);
+    line-height: 1.2;
+  }
+
+  /* Pause button */
+  .pause-btn {
+    position: absolute;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 20;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--color-credits-text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    opacity: 0;
+  }
+
+  .credits-section:hover .pause-btn {
+    opacity: 1;
+  }
+
+  .pause-btn:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .pause-btn:focus-visible {
+    opacity: 1;
+    outline: 2px solid var(--color-credits-accent);
+    outline-offset: 2px;
+  }
+
+  .pause-icon .icon-play {
+    display: none;
+  }
+
+  .credits-section.paused .pause-icon .icon-pause {
+    display: none;
+  }
+
+  .credits-section.paused .pause-icon .icon-play {
+    display: block;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 640px) {
+    .credits-section {
+      height: 60vh;
+      min-height: 400px;
+      border-radius: 0.5rem;
+    }
+
+    .fade-mask-top,
+    .fade-mask-bottom {
+      height: 80px;
+    }
+
+    .credits-container {
+      gap: 2rem;
+    }
+
+    .credit-network {
+      font-size: 0.65rem;
+    }
+
+    .credit-name {
+      font-size: 1.125rem;
+    }
+
+    .credit-final-label {
+      font-size: 0.75rem;
+    }
+
+    .credit-final-name {
+      font-size: 1.75rem;
+    }
+
+    .credit-spacer {
+      height: 5vh;
+    }
+
+    .credit-final {
+      padding: 2rem 0;
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .credit-name {
+      font-size: 1.375rem;
+    }
+
+    .credit-final-name {
+      font-size: 2rem;
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .credit-name {
+      font-size: 1.625rem;
+    }
+
+    .credit-final-name {
+      font-size: 3rem;
+    }
+  }
+
+  /* Reduced motion: disable animation, show scrollable list */
+  @media (prefers-reduced-motion: reduce) {
+    .credits-container {
+      animation: none;
+      position: relative;
+      transform: none;
+      padding: 2rem 1.5rem;
+    }
+
+    .credits-viewport {
+      overflow-y: auto;
+    }
+
+    .credit-spacer {
+      height: 1rem;
+    }
+
+    .credit-final {
+      padding: 2rem 0;
+      margin-top: 1rem;
+    }
+
+    .grain-overlay {
+      animation: none;
+    }
+
+    /* Always show pause button with different icon */
+    .pause-btn {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  function initCreditsControls() {
+    const section = document.querySelector('.credits-section');
+    const pauseBtn = section?.querySelector('.pause-btn');
+
+    if (!section || !pauseBtn) return;
+
+    let isPaused = false;
+
+    function togglePause() {
+      isPaused = !isPaused;
+      section.classList.toggle('paused', isPaused);
+      pauseBtn.setAttribute('aria-label', isPaused ? 'Play credits' : 'Pause credits');
+    }
+
+    pauseBtn.addEventListener('click', togglePause);
+
+    // Keyboard support
+    pauseBtn.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        togglePause();
+      }
+    });
+  }
+
+  // Initialize on page load
+  initCreditsControls();
+
+  // Re-initialize after view transitions
+  document.addEventListener('astro:after-swap', initCreditsControls);
+</script>

@@ -48,9 +48,31 @@ const ctaHref = pageContent?.footer?.ctaHref || '/connect';
     </div>
   </header>
 
-  <!-- Gallery -->
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-    <DocumentGallery client:visible testimonials={testimonials} />
+  <!-- Gallery - Award Presentation Stage -->
+  <main class="relative py-12 md:py-16 overflow-hidden">
+    <!-- Stage lighting effect -->
+    <div class="absolute inset-0 bg-gradient-to-b from-stone-950 via-stone-900 to-stone-950"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(212,175,55,0.1),transparent)]"></div>
+
+    <!-- Curtain edges -->
+    <div class="absolute top-0 left-0 w-24 h-full bg-gradient-to-r from-stone-950 to-transparent pointer-events-none"></div>
+    <div class="absolute top-0 right-0 w-24 h-full bg-gradient-to-l from-stone-950 to-transparent pointer-events-none"></div>
+
+    <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Section header -->
+      <div class="text-center mb-12">
+        <div class="inline-flex items-center gap-3 mb-4">
+          <div class="h-px w-12 bg-gradient-to-r from-transparent to-amber-500/50"></div>
+          <svg class="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>
+          <div class="h-px w-12 bg-gradient-to-l from-transparent to-amber-500/50"></div>
+        </div>
+        <p class="text-amber-400/80 text-sm font-medium tracking-widest uppercase">Hall of Recognition</p>
+      </div>
+
+      <DocumentGallery client:visible testimonials={testimonials} />
+    </div>
   </main>
 
   <!-- Footer CTA -->

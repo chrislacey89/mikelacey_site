@@ -1,5 +1,7 @@
 ---
+import { ViewTransitions } from 'astro:transitions';
 import MainNav from '../components/shell/MainNav.tsx';
+import FilmTransition from '../components/global/FilmTransition.astro';
 import { VisualEditing } from '@sanity/astro/visual-editing';
 import '../styles/global.css';
 
@@ -56,6 +58,9 @@ const navItems = [
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- View Transitions for film reel effect -->
+    <ViewTransitions />
   </head>
   <body class="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100">
     <MainNav
@@ -67,5 +72,6 @@ const navItems = [
       <slot />
     </main>
     <VisualEditing enabled={true} zIndex={1000} />
+    <FilmTransition />
   </body>
 </html>

@@ -1,5 +1,6 @@
 ---
 import type { Interview } from '../../types';
+import BroadcastVideoFrame from './BroadcastVideoFrame.astro';
 
 interface Props {
   interviews: Interview[];
@@ -12,44 +13,72 @@ function getYouTubeId(url: string): string {
   const match = url.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([^&?]+)/);
   return match ? match[1] : '';
 }
+
+// Generate fake timecode for visual effect
+function generateTimecode(index: number): string {
+  const hours = '00';
+  const minutes = String(Math.floor((index * 7) % 60)).padStart(2, '0');
+  const seconds = String((index * 23) % 60).padStart(2, '0');
+  const frames = String((index * 11) % 30).padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}:${frames}`;
+}
 ---
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-  {interviews.map((interview) => {
+<div class="interview-grid">
+  {interviews.map((interview, index) => {
     const isYouTube = interview.videoType === 'youtube' || (!interview.videoType && interview.youtubeUrl);
     const videoId = isYouTube && interview.youtubeUrl ? getYouTubeId(interview.youtubeUrl) : '';
     return (
-      <div class="space-y-4">
-        <div class="aspect-video rounded-lg overflow-hidden bg-stone-900">
+      <div class="interview-item">
+        <BroadcastVideoFrame
+          title={interview.title}
+          subtitle={interview.description}
+          timecode={generateTimecode(index)}
+        >
           {isYouTube ? (
             <iframe
               src={`https://www.youtube.com/embed/${videoId}`}
               title={interview.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowfullscreen
-              class="w-full h-full"
             ></iframe>
           ) : (
             <video
               src={interview.directVideoUrl}
               title={interview.title}
               controls
-              class="w-full h-full object-contain"
               preload="metadata"
             >
               Your browser does not support the video tag.
             </video>
           )}
-        </div>
-        <div>
-          <h3 class="font-semibold text-stone-900 dark:text-white">
-            {interview.title}
-          </h3>
-          <p class="text-sm text-stone-600 dark:text-stone-400">
-            {interview.description}
-          </p>
-        </div>
+        </BroadcastVideoFrame>
       </div>
     );
   })}
 </div>
+
+<style>
+  .interview-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  @media (min-width: 1024px) {
+    .interview-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .interview-item {
+    /* Container for each interview */
+  }
+
+  .interview-item :global(iframe),
+  .interview-item :global(video) {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+</style>

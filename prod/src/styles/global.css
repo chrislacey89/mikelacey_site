@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap');
 @import "tailwindcss";
 
 @variant dark (&:where(.dark, .dark *));
@@ -6,6 +6,51 @@
 @theme {
   --font-sans: 'Outfit', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
+  --font-display: 'Playfair Display', serif;
+  --font-serif: 'Libre Baskerville', serif;
+
+  /* Cinematic Credits Colors */
+  --color-credits-bg: #0a0a0a;
+  --color-credits-text: #f5f5f4;
+  --color-credits-text-muted: #a8a29e;
+  --color-credits-accent: #d4af37;
+  --color-credits-accent-light: #fef3c7;
+
+  /* NLE Timeline Colors */
+  --color-nle-playhead: #ef4444;
+  --color-nle-clip-active: #d4af37;
+  --color-nle-timecode: #22c55e;
+
+  /* Award Presentation Colors */
+  --color-spotlight-center: rgba(255, 215, 0, 0.12);
+  --color-spotlight-edge: transparent;
+  --color-frame-gold: #b8860b;
+  --color-frame-gold-light: #d4af37;
+
+  /* Call Sheet / Production Paperwork Colors */
+  --color-paper: #faf8f3;
+  --color-paper-dark: #1c1a17;
+  --color-paper-lines: #e5e0d5;
+  --color-paper-lines-dark: #2a2722;
+  --color-stamp-red: #8b0000;
+  --color-stamp-approved: #228b22;
+  --color-badge-lanyard: #1e3a5f;
+
+  /* Contact Sheet / Film Strip Colors */
+  --color-film-base: #0d0d0d;
+  --color-film-frame: #1a1a1a;
+  --color-sprocket: #2a2a2a;
+  --color-sprocket-hole: #0a0a0a;
+  --color-frame-number: #666;
+  --color-light-table: #1a1a1a;
+  --color-loupe-border: #d4af37;
+
+  /* Viewfinder Overlay Colors */
+  --color-viewfinder-grid: rgba(255, 255, 255, 0.3);
+  --color-viewfinder-crosshair: rgba(255, 255, 255, 0.7);
+  --color-viewfinder-corner: rgba(255, 255, 255, 0.6);
+  --color-viewfinder-metadata-bg: rgba(0, 0, 0, 0.6);
+  --color-viewfinder-metadata-text: rgba(255, 255, 255, 0.8);
 }
 
 /* Base styles */

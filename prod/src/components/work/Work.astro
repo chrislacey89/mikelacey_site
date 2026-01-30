@@ -1,6 +1,6 @@
 ---
 import type { Credit, Photo, Interview } from '../../types';
-import CreditsGrid from './CreditsGrid.astro';
+import CinematicCredits from './CinematicCredits.astro';
 import PhotoGallery from './PhotoGallery.tsx';
 import VideoInterviews from './VideoInterviews.astro';
 
@@ -58,28 +58,55 @@ const ctaHref = pageContent?.footer?.ctaHref || '/connect';
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-16">
-    <!-- Credits Section -->
-    <section>
-      <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mb-8">
+  <!-- Cinematic Credits Section (Full-bleed) -->
+  <section class="py-12 md:py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+      <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white">
         {creditsHeading}
       </h2>
-      <CreditsGrid credits={credits} />
-    </section>
+    </div>
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <CinematicCredits credits={credits} />
+    </div>
+  </section>
 
-    <!-- Photos Section -->
-    <section>
-      <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mb-8">
-        {photosHeading}
-      </h2>
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-16">
+    <!-- Photos Section - Contact Sheet Treatment -->
+    <section class="photos-section">
+      <div class="section-header">
+        <div class="section-badge" aria-hidden="true">
+          <span class="badge-icon">◉</span>
+        </div>
+        <div class="section-title-group">
+          <h2 class="section-title">{photosHeading}</h2>
+          <p class="section-subtitle">CONTACT SHEET - REVIEW COPY</p>
+        </div>
+        <div class="section-meta" aria-hidden="true">
+          <span class="meta-label">ROLL</span>
+          <span class="meta-value">001</span>
+        </div>
+      </div>
       <PhotoGallery client:visible photos={photos} />
     </section>
 
-    <!-- Videos Section -->
-    <section>
-      <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mb-8">
-        {videosHeading}
-      </h2>
+    <!-- Videos Section - Broadcast Interview Treatment -->
+    <section class="videos-section">
+      <div class="videos-header">
+        <div class="broadcast-badge" aria-hidden="true">
+          <span class="badge-rec">●</span>
+          <span class="badge-live">LIVE</span>
+        </div>
+        <div class="videos-title-group">
+          <h2 class="videos-title">{videosHeading}</h2>
+          <p class="videos-subtitle">BROADCAST ARCHIVE - ON AIR</p>
+        </div>
+        <div class="signal-indicator" aria-hidden="true">
+          <span class="signal-bar"></span>
+          <span class="signal-bar"></span>
+          <span class="signal-bar"></span>
+          <span class="signal-bar"></span>
+        </div>
+      </div>
       <VideoInterviews interviews={interviews} />
     </section>
   </main>
@@ -102,3 +129,215 @@ const ctaHref = pageContent?.footer?.ctaHref || '/connect';
     </div>
   </footer>
 </div>
+
+<style>
+  /* Photos Section - Contact Sheet Header */
+  .photos-section {
+    margin-bottom: 3rem;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #1a1a1a;
+    font-family: var(--font-mono);
+  }
+
+  :global(.dark) .section-header {
+    border-bottom-color: #444;
+  }
+
+  .section-badge {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #2a2a2a 0%, #1a1a1a 100%);
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+
+  .badge-icon {
+    color: #d4af37;
+    font-size: 1.25rem;
+  }
+
+  .section-title-group {
+    flex: 1;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #1a1a1a;
+    margin: 0;
+  }
+
+  :global(.dark) .section-title {
+    color: #f5f5f4;
+  }
+
+  .section-subtitle {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #888;
+    margin: 0.25rem 0 0;
+  }
+
+  .section-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.125rem;
+  }
+
+  .meta-label {
+    font-size: 0.55rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #666;
+  }
+
+  .meta-value {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  :global(.dark) .meta-value {
+    color: #f5f5f4;
+  }
+
+  @media (max-width: 640px) {
+    .section-header {
+      flex-wrap: wrap;
+    }
+
+    .section-meta {
+      display: none;
+    }
+  }
+
+  /* Videos Section - Broadcast Header */
+  .videos-section {
+    margin-top: 2rem;
+  }
+
+  .videos-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #1a1a1a;
+    font-family: var(--font-mono);
+  }
+
+  :global(.dark) .videos-header {
+    border-bottom-color: #444;
+  }
+
+  .broadcast-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(180deg, #1a1a1a 0%, #0d0d0d 100%);
+    padding: 8px 12px;
+    border-radius: 4px;
+    border-left: 3px solid #ef4444;
+    flex-shrink: 0;
+  }
+
+  .badge-rec {
+    color: #ef4444;
+    font-size: 0.6rem;
+    animation: pulse-broadcast 1.5s ease-in-out infinite;
+  }
+
+  .badge-live {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #ef4444;
+  }
+
+  @keyframes pulse-broadcast {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .videos-title-group {
+    flex: 1;
+  }
+
+  .videos-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #1a1a1a;
+    margin: 0;
+  }
+
+  :global(.dark) .videos-title {
+    color: #f5f5f4;
+  }
+
+  .videos-subtitle {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: #888;
+    margin: 0.25rem 0 0;
+  }
+
+  .signal-indicator {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    padding: 4px;
+  }
+
+  .signal-bar {
+    width: 4px;
+    background: var(--color-nle-timecode);
+    border-radius: 1px;
+  }
+
+  .signal-bar:nth-child(1) {
+    height: 6px;
+  }
+
+  .signal-bar:nth-child(2) {
+    height: 10px;
+  }
+
+  .signal-bar:nth-child(3) {
+    height: 14px;
+  }
+
+  .signal-bar:nth-child(4) {
+    height: 18px;
+  }
+
+  @media (max-width: 640px) {
+    .videos-header {
+      flex-wrap: wrap;
+    }
+
+    .signal-indicator {
+      display: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .badge-rec {
+      animation: none;
+    }
+  }
+</style>

@@ -1,0 +1,410 @@
+---
+/**
+ * ViewfinderOverlay - Director's composition guides
+ *
+ * Visual elements:
+ * - Rule of thirds grid (3x3)
+ * - Center crosshair focus point
+ * - Frame metadata ("SCENE X TAKE Y")
+ * - Subtle vignette edge darkening
+ *
+ * Use as an overlay on images/videos for cinematic effect
+ * Shows on hover with 0.2s fade-in
+ */
+
+interface Props {
+  scene?: string;
+  take?: string;
+  aspectRatio?: '16:9' | '2.39:1' | '4:3' | 'auto';
+  showGrid?: boolean;
+  showCrosshair?: boolean;
+  showMetadata?: boolean;
+  showVignette?: boolean;
+}
+
+const {
+  scene = 'BTS',
+  take = '1',
+  aspectRatio = 'auto',
+  showGrid = true,
+  showCrosshair = true,
+  showMetadata = true,
+  showVignette = true,
+} = Astro.props;
+
+const formattedScene = scene.toUpperCase().padStart(3, ' ');
+const formattedTake = take.padStart(2, '0');
+---
+
+<div class="viewfinder-overlay" aria-hidden="true">
+  {/* Vignette effect */}
+  {showVignette && <div class="viewfinder-vignette" />}
+
+  {/* Rule of thirds grid */}
+  {showGrid && (
+    <div class="viewfinder-grid">
+      <div class="grid-line horizontal line-1" />
+      <div class="grid-line horizontal line-2" />
+      <div class="grid-line vertical line-1" />
+      <div class="grid-line vertical line-2" />
+    </div>
+  )}
+
+  {/* Center crosshair */}
+  {showCrosshair && (
+    <div class="viewfinder-crosshair">
+      <div class="crosshair-h" />
+      <div class="crosshair-v" />
+      <div class="crosshair-circle" />
+    </div>
+  )}
+
+  {/* Frame corners */}
+  <div class="viewfinder-corners">
+    <div class="corner corner-tl" />
+    <div class="corner corner-tr" />
+    <div class="corner corner-bl" />
+    <div class="corner corner-br" />
+  </div>
+
+  {/* Frame metadata */}
+  {showMetadata && (
+    <div class="viewfinder-metadata">
+      <span class="metadata-scene">SCENE {formattedScene}</span>
+      <span class="metadata-take">TAKE {formattedTake}</span>
+    </div>
+  )}
+
+  {/* Aspect ratio indicator */}
+  {aspectRatio !== 'auto' && (
+    <div class="aspect-indicator">
+      <span class="aspect-text">{aspectRatio}</span>
+    </div>
+  )}
+
+  {/* Safe area marker */}
+  <div class="safe-area" />
+</div>
+
+<style>
+  .viewfinder-overlay {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    font-family: var(--font-mono);
+    z-index: 10;
+  }
+
+  /* Show on parent hover */
+  :global(.viewfinder-container:hover) .viewfinder-overlay,
+  :global(.viewfinder-active) .viewfinder-overlay {
+    opacity: 1;
+  }
+
+  /* Vignette - subtle edge darkening */
+  .viewfinder-vignette {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 50%,
+      rgba(0, 0, 0, 0.4) 100%
+    );
+    pointer-events: none;
+  }
+
+  /* Rule of thirds grid */
+  .viewfinder-grid {
+    position: absolute;
+    inset: 0;
+  }
+
+  .grid-line {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.3);
+    transform-origin: center;
+    animation: grid-draw 0.3s ease-out forwards;
+  }
+
+  .grid-line.horizontal {
+    left: 0;
+    right: 0;
+    height: 1px;
+  }
+
+  .grid-line.horizontal.line-1 {
+    top: 33.33%;
+    animation-delay: 0.05s;
+  }
+
+  .grid-line.horizontal.line-2 {
+    top: 66.66%;
+    animation-delay: 0.1s;
+  }
+
+  .grid-line.vertical {
+    top: 0;
+    bottom: 0;
+    width: 1px;
+  }
+
+  .grid-line.vertical.line-1 {
+    left: 33.33%;
+    animation-delay: 0.15s;
+  }
+
+  .grid-line.vertical.line-2 {
+    left: 66.66%;
+    animation-delay: 0.2s;
+  }
+
+  @keyframes grid-draw {
+    from {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    to {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
+
+  .grid-line.vertical {
+    animation-name: grid-draw-v;
+  }
+
+  @keyframes grid-draw-v {
+    from {
+      transform: scaleY(0);
+      opacity: 0;
+    }
+    to {
+      transform: scaleY(1);
+      opacity: 1;
+    }
+  }
+
+  /* Center crosshair */
+  .viewfinder-crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60px;
+    height: 60px;
+    animation: crosshair-appear 0.25s ease-out 0.15s both;
+  }
+
+  @keyframes crosshair-appear {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  .crosshair-h,
+  .crosshair-v {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  .crosshair-h {
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+
+  .crosshair-v {
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    transform: translateX(-50%);
+  }
+
+  .crosshair-circle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Frame corners */
+  .viewfinder-corners {
+    position: absolute;
+    inset: 12px;
+  }
+
+  .corner {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    border-color: rgba(255, 255, 255, 0.6);
+    border-style: solid;
+  }
+
+  .corner-tl {
+    top: 0;
+    left: 0;
+    border-width: 2px 0 0 2px;
+    animation: corner-tl-in 0.2s ease-out both;
+  }
+
+  .corner-tr {
+    top: 0;
+    right: 0;
+    border-width: 2px 2px 0 0;
+    animation: corner-tr-in 0.2s ease-out 0.05s both;
+  }
+
+  .corner-bl {
+    bottom: 0;
+    left: 0;
+    border-width: 0 0 2px 2px;
+    animation: corner-bl-in 0.2s ease-out 0.1s both;
+  }
+
+  .corner-br {
+    bottom: 0;
+    right: 0;
+    border-width: 0 2px 2px 0;
+    animation: corner-br-in 0.2s ease-out 0.15s both;
+  }
+
+  @keyframes corner-tl-in {
+    from { opacity: 0; transform: translate(-10px, -10px); }
+    to { opacity: 1; transform: translate(0, 0); }
+  }
+
+  @keyframes corner-tr-in {
+    from { opacity: 0; transform: translate(10px, -10px); }
+    to { opacity: 1; transform: translate(0, 0); }
+  }
+
+  @keyframes corner-bl-in {
+    from { opacity: 0; transform: translate(-10px, 10px); }
+    to { opacity: 1; transform: translate(0, 0); }
+  }
+
+  @keyframes corner-br-in {
+    from { opacity: 0; transform: translate(10px, 10px); }
+    to { opacity: 1; transform: translate(0, 0); }
+  }
+
+  /* Frame metadata */
+  .viewfinder-metadata {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 1.5rem;
+    animation: metadata-fade 0.25s ease-out 0.2s both;
+  }
+
+  @keyframes metadata-fade {
+    from {
+      opacity: 0;
+      transform: translateX(-50%) translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+
+  .metadata-scene,
+  .metadata-take {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.8);
+    background: rgba(0, 0, 0, 0.6);
+    padding: 0.25rem 0.5rem;
+    border-radius: 2px;
+  }
+
+  /* Aspect ratio indicator */
+  .aspect-indicator {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    animation: aspect-fade 0.2s ease-out 0.1s both;
+  }
+
+  @keyframes aspect-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  .aspect-text {
+    font-size: 0.55rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(0, 0, 0, 0.5);
+    padding: 0.2rem 0.4rem;
+    border-radius: 2px;
+  }
+
+  /* Safe area - inner frame guide */
+  .safe-area {
+    position: absolute;
+    inset: 5%;
+    border: 1px dashed rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    animation: safe-area-in 0.3s ease-out 0.25s both;
+  }
+
+  @keyframes safe-area-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .viewfinder-overlay {
+      transition: none;
+    }
+
+    .grid-line,
+    .viewfinder-crosshair,
+    .corner,
+    .viewfinder-metadata,
+    .aspect-indicator,
+    .safe-area {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
+
+    .corner-tl,
+    .corner-tr,
+    .corner-bl,
+    .corner-br {
+      transform: none;
+    }
+
+    .viewfinder-metadata {
+      transform: translateX(-50%);
+    }
+  }
+</style>

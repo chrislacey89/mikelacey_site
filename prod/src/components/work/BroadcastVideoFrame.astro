@@ -1,0 +1,321 @@
+---
+/**
+ * BroadcastVideoFrame - Wraps video content with broadcast-style overlays
+ *
+ * Visual elements:
+ * - "INTERVIEW" network-style bug (top-left)
+ * - Timecode overlay (top-right)
+ * - CRT scanlines effect
+ * - Lower third with name/title
+ * - REC indicator
+ */
+
+interface Props {
+  title: string;
+  subtitle?: string;
+  timecode?: string;
+}
+
+const { title, subtitle, timecode = '00:00:00:00' } = Astro.props;
+---
+
+<div class="broadcast-frame">
+  <!-- CRT Scanlines Overlay -->
+  <div class="scanlines" aria-hidden="true"></div>
+
+  <!-- Top Bar: Interview Bug + Timecode -->
+  <div class="broadcast-top-bar">
+    <div class="interview-bug">
+      <span class="bug-icon">●</span>
+      <span class="bug-text">INTERVIEW</span>
+    </div>
+    <div class="timecode-display">
+      <span class="tc-label">TC</span>
+      <span class="tc-value">{timecode}</span>
+    </div>
+  </div>
+
+  <!-- REC Indicator -->
+  <div class="rec-indicator" aria-hidden="true">
+    <span class="rec-dot"></span>
+    <span class="rec-text">REC</span>
+  </div>
+
+  <!-- Video Content Slot -->
+  <div class="video-content">
+    <slot />
+  </div>
+
+  <!-- Lower Third -->
+  <div class="lower-third">
+    <div class="lt-accent" aria-hidden="true"></div>
+    <div class="lt-content">
+      <span class="lt-name">{title}</span>
+      {subtitle && <span class="lt-title">{subtitle}</span>}
+    </div>
+    <div class="lt-network" aria-hidden="true">
+      <span class="network-bug">ML</span>
+    </div>
+  </div>
+</div>
+
+<style>
+  .broadcast-frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #0a0a0a;
+    border-radius: 4px;
+    overflow: hidden;
+    font-family: var(--font-mono);
+  }
+
+  /* CRT Scanlines */
+  .scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.15) 2px,
+      rgba(0, 0, 0, 0.15) 4px
+    );
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0.5;
+  }
+
+  /* Top Bar */
+  .broadcast-top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px 16px;
+    z-index: 5;
+    pointer-events: none;
+  }
+
+  /* Interview Bug */
+  .interview-bug {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 4px 10px;
+    border-radius: 2px;
+    border-left: 3px solid var(--color-credits-accent);
+  }
+
+  .bug-icon {
+    color: #ef4444;
+    font-size: 0.5rem;
+    animation: pulse-rec 2s ease-in-out infinite;
+  }
+
+  .bug-text {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #fff;
+  }
+
+  /* Timecode Display */
+  .timecode-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 4px 10px;
+    border-radius: 2px;
+  }
+
+  .tc-label {
+    font-size: 0.5rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: #888;
+  }
+
+  .tc-value {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--color-nle-timecode);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* REC Indicator */
+  .rec-indicator {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 4px 10px;
+    border-radius: 2px;
+    z-index: 5;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .broadcast-frame:hover .rec-indicator {
+    opacity: 1;
+  }
+
+  .rec-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #ef4444;
+    animation: pulse-rec 1s ease-in-out infinite;
+  }
+
+  .rec-text {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    color: #ef4444;
+  }
+
+  @keyframes pulse-rec {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Video Content */
+  .video-content {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .video-content :global(iframe),
+  .video-content :global(video) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Lower Third */
+  .lower-third {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: stretch;
+    z-index: 5;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  }
+
+  .broadcast-frame:hover .lower-third {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .lt-accent {
+    width: 4px;
+    background: var(--color-credits-accent);
+    flex-shrink: 0;
+  }
+
+  .lt-content {
+    flex: 1;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.75) 100%);
+    padding: 10px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .lt-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.02em;
+  }
+
+  .lt-title {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--color-credits-accent);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .lt-network {
+    background: var(--color-credits-accent);
+    padding: 0 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .network-bug {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #0a0a0a;
+    letter-spacing: 0.05em;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .broadcast-top-bar {
+      padding: 8px 10px;
+    }
+
+    .interview-bug,
+    .timecode-display,
+    .rec-indicator {
+      padding: 3px 6px;
+    }
+
+    .bug-text,
+    .rec-text {
+      font-size: 0.5rem;
+    }
+
+    .tc-value {
+      font-size: 0.55rem;
+    }
+
+    .lt-content {
+      padding: 8px 12px;
+    }
+
+    .lt-name {
+      font-size: 0.75rem;
+    }
+
+    .lt-title {
+      font-size: 0.55rem;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .bug-icon,
+    .rec-dot {
+      animation: none;
+    }
+
+    .lower-third {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .rec-indicator {
+      opacity: 1;
+    }
+  }
+</style>

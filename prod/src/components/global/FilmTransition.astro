@@ -1,0 +1,273 @@
+---
+/**
+ * FilmTransition - Film reel page transition overlay
+ *
+ * Visual elements:
+ * - Film splice marks (horizontal lines)
+ * - Film grain overlay
+ * - "CUT TO:" screenplay flash
+ * - Brief black frame
+ *
+ * Uses Astro View Transitions lifecycle events
+ * Total duration: ~300ms
+ */
+---
+
+<!-- Film Transition Overlay -->
+<div id="film-transition-overlay" class="film-transition" aria-hidden="true">
+  <!-- Film grain texture -->
+  <div class="film-grain"></div>
+
+  <!-- Splice marks -->
+  <div class="splice-marks">
+    <div class="splice-line"></div>
+    <div class="splice-line"></div>
+    <div class="splice-line"></div>
+  </div>
+
+  <!-- CUT TO flash -->
+  <div class="cut-to-flash">
+    <span class="cut-text">CUT TO:</span>
+  </div>
+</div>
+
+<script>
+  // Film transition controller
+  function initFilmTransition() {
+    const overlay = document.getElementById('film-transition-overlay');
+    if (!overlay) return;
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      overlay.style.display = 'none';
+      return;
+    }
+
+    // Before navigation starts
+    document.addEventListener('astro:before-preparation', () => {
+      overlay.classList.add('active');
+    });
+
+    // After new page content is swapped in
+    document.addEventListener('astro:after-swap', () => {
+      // Keep overlay visible briefly for the "new scene" effect
+      setTimeout(() => {
+        overlay.classList.remove('active');
+      }, 100);
+    });
+
+    // Handle page load (initial visit)
+    document.addEventListener('astro:page-load', () => {
+      overlay.classList.remove('active');
+    });
+  }
+
+  // Initialize on first load
+  initFilmTransition();
+
+  // Re-initialize after each navigation
+  document.addEventListener('astro:after-swap', initFilmTransition);
+</script>
+
+<style is:global>
+  .film-transition {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+    background: #000;
+    font-family: var(--font-mono);
+  }
+
+  .film-transition.active {
+    opacity: 1;
+    visibility: visible;
+    animation: film-flash 300ms ease-out forwards;
+  }
+
+  @keyframes film-flash {
+    0% {
+      opacity: 1;
+      background: #000;
+    }
+    15% {
+      opacity: 1;
+      background: #111;
+    }
+    30% {
+      opacity: 1;
+      background: #000;
+    }
+    45% {
+      opacity: 0.9;
+      background: #0a0a0a;
+    }
+    70% {
+      opacity: 0.5;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /* Film grain texture */
+  .film-grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  .film-transition.active .film-grain {
+    animation: grain-flash 300ms steps(4) forwards;
+  }
+
+  @keyframes grain-flash {
+    0%, 40% {
+      opacity: 0.6;
+      transform: translate(0, 0);
+    }
+    10% {
+      transform: translate(-2px, 1px);
+    }
+    20% {
+      transform: translate(1px, -2px);
+    }
+    30% {
+      transform: translate(-1px, 2px);
+    }
+    70% {
+      opacity: 0.3;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  /* Splice marks */
+  .splice-marks {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    opacity: 0;
+    padding: 0 10%;
+  }
+
+  .film-transition.active .splice-marks {
+    animation: splice-flash 300ms ease-out forwards;
+  }
+
+  @keyframes splice-flash {
+    0%, 5% {
+      opacity: 0;
+    }
+    10%, 35% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .splice-line {
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      #444 10%,
+      #666 20%,
+      #444 30%,
+      transparent 35%,
+      transparent 65%,
+      #444 70%,
+      #666 80%,
+      #444 90%,
+      transparent 100%
+    );
+  }
+
+  .splice-line:nth-child(2) {
+    height: 3px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      #555 15%,
+      #777 25%,
+      #555 35%,
+      transparent 40%,
+      transparent 60%,
+      #555 65%,
+      #777 75%,
+      #555 85%,
+      transparent 100%
+    );
+  }
+
+  /* CUT TO flash */
+  .cut-to-flash {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+  }
+
+  .film-transition.active .cut-to-flash {
+    animation: cut-flash 300ms ease-out forwards;
+  }
+
+  @keyframes cut-flash {
+    0%, 10% {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    15%, 30% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0;
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  .cut-text {
+    font-size: clamp(1rem, 4vw, 2rem);
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    color: #888;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .film-transition,
+    .film-transition.active {
+      display: none !important;
+      animation: none !important;
+    }
+
+    .film-grain,
+    .splice-marks,
+    .cut-to-flash {
+      animation: none !important;
+    }
+  }
+</style>

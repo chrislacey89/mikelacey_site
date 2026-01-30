@@ -1,6 +1,7 @@
 ---
 import type { TimelineEvent } from '../../types';
 import TimelineEra from './TimelineEra.astro';
+import NLETimeline from './NLETimeline.astro';
 
 interface PageContent {
   eyebrow?: string;
@@ -51,6 +52,9 @@ const secondaryCtaHref = pageContent?.footer?.secondaryCtaHref || '/connect';
       </p>
     </div>
   </header>
+
+  <!-- NLE Timeline Navigator -->
+  <NLETimeline events={timelineEvents} />
 
   <!-- Timeline -->
   <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
