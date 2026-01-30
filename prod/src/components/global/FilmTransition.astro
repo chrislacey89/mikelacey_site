@@ -9,7 +9,7 @@
  * - Brief black frame
  *
  * Uses Astro View Transitions lifecycle events
- * Total duration: ~300ms
+ * Total duration: ~600ms
  */
 ---
 
@@ -54,7 +54,7 @@
       // Keep overlay visible briefly for the "new scene" effect
       setTimeout(() => {
         overlay.classList.remove('active');
-      }, 100);
+      }, 200);
     });
 
     // Handle page load (initial visit)
@@ -85,7 +85,7 @@
   .film-transition.active {
     opacity: 1;
     visibility: visible;
-    animation: film-flash 300ms ease-out forwards;
+    animation: film-flash 600ms ease-out forwards;
   }
 
   @keyframes film-flash {
@@ -93,19 +93,19 @@
       opacity: 1;
       background: #000;
     }
-    15% {
+    10% {
       opacity: 1;
       background: #111;
     }
-    30% {
+    20% {
       opacity: 1;
       background: #000;
     }
-    45% {
+    50% {
       opacity: 0.9;
       background: #0a0a0a;
     }
-    70% {
+    75% {
       opacity: 0.5;
     }
     100% {
@@ -126,11 +126,11 @@
   }
 
   .film-transition.active .film-grain {
-    animation: grain-flash 300ms steps(4) forwards;
+    animation: grain-flash 600ms steps(4) forwards;
   }
 
   @keyframes grain-flash {
-    0%, 40% {
+    0%, 50% {
       opacity: 0.6;
       transform: translate(0, 0);
     }
@@ -140,10 +140,10 @@
     20% {
       transform: translate(1px, -2px);
     }
-    30% {
+    35% {
       transform: translate(-1px, 2px);
     }
-    70% {
+    75% {
       opacity: 0.3;
     }
     100% {
@@ -164,17 +164,17 @@
   }
 
   .film-transition.active .splice-marks {
-    animation: splice-flash 300ms ease-out forwards;
+    animation: splice-flash 600ms ease-out forwards;
   }
 
   @keyframes splice-flash {
     0%, 5% {
       opacity: 0;
     }
-    10%, 35% {
+    10%, 45% {
       opacity: 1;
     }
-    50% {
+    60% {
       opacity: 0;
     }
     100% {
@@ -227,19 +227,19 @@
   }
 
   .film-transition.active .cut-to-flash {
-    animation: cut-flash 300ms ease-out forwards;
+    animation: cut-flash 600ms ease-out forwards;
   }
 
   @keyframes cut-flash {
-    0%, 10% {
+    0%, 5% {
       opacity: 0;
       transform: scale(0.9);
     }
-    15%, 30% {
+    10%, 45% {
       opacity: 1;
       transform: scale(1);
     }
-    50% {
+    60% {
       opacity: 0;
       transform: scale(1.05);
     }
