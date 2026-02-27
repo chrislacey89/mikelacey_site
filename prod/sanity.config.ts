@@ -1,6 +1,7 @@
 import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import { presentationTool, defineLocations } from 'sanity/presentation'
+import { orderableDocumentListDeskItem } from '@sanity/orderable-document-list'
 import { schemaTypes } from './sanity/schemaTypes'
 
 const projectId = import.meta.env.PUBLIC_SANITY_PROJECT_ID || 'yi6f32nh'
@@ -12,7 +13,23 @@ export default defineConfig({
   projectId,
   dataset,
   plugins: [
-    structureTool(),
+    structureTool({
+      structure: (S, context) =>
+        S.list()
+          .title('Content')
+          .items([
+            orderableDocumentListDeskItem({
+              type: 'timelineEvent',
+              title: 'Timeline Events',
+              S,
+              context,
+            }),
+            S.divider(),
+            ...S.documentTypeListItems().filter(
+              (item) => item.getId() !== 'timelineEvent'
+            ),
+          ]),
+    }),
     presentationTool({
       previewUrl: {
         origin: 'https://www.themikelacey.com',

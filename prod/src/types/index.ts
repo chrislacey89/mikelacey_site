@@ -5,6 +5,7 @@
 export interface TimelineEvent {
   id: string
   year: string
+  showYear?: boolean
   title: string
   narrative: string
   photo: string | null

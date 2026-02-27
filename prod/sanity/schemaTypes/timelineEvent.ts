@@ -1,15 +1,25 @@
 import { defineType, defineField } from 'sanity'
+import { orderRankField, orderRankOrdering } from '@sanity/orderable-document-list'
 
 export const timelineEventType = defineType({
   name: 'timelineEvent',
   title: 'Timeline Event',
   type: 'document',
+  orderings: [orderRankOrdering],
   fields: [
+    orderRankField({ type: 'timelineEvent' }),
     defineField({
       name: 'year',
       title: 'Year',
       type: 'string',
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'showYear',
+      title: 'Show Year',
+      type: 'boolean',
+      description: 'Display the year label on the story page',
+      initialValue: false,
     }),
     defineField({
       name: 'title',
@@ -38,19 +48,6 @@ export const timelineEventType = defineType({
         }),
       ],
     }),
-    defineField({
-      name: 'order',
-      title: 'Display Order',
-      type: 'number',
-      description: 'Used to sort timeline events',
-    }),
-  ],
-  orderings: [
-    {
-      title: 'Display Order',
-      name: 'orderAsc',
-      by: [{ field: 'order', direction: 'asc' }],
-    },
   ],
   preview: {
     select: {

@@ -11,9 +11,10 @@ const [timelineEvents, pageContent] = await Promise.all([
   loadQuery<any[]>({
     preview,
     query: `
-      *[_type == "timelineEvent"] | order(order asc) {
+      *[_type == "timelineEvent"] | order(orderRank asc, _createdAt asc) {
         "id": _id,
         year,
+        showYear,
         title,
         narrative,
         "photo": photo.asset->url
