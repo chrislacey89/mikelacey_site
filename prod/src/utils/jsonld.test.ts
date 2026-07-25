@@ -106,7 +106,16 @@ describe('buildHomeGraph', () => {
   // The default stega filter already skips `email` and valid URLs, so the
   // fields genuinely at risk here are name, title, and tagline.
   it('strips stega zero-width characters from values', () => {
-    const stega = '​‌‍﻿​‌‍﻿';
+    // Built from code points rather than pasted literals. Invisible characters
+    // in source are one editor normalization or lint --fix away from silently
+    // becoming an empty string, at which point every assertion below would
+    // still pass while guarding nothing. ZWSP, ZWNJ, ZWJ, BOM — the alphabet
+    // @vercel/stega encodes with, repeated to clear its {4,} run threshold.
+    const stega = String.fromCodePoint(0x200b, 0x200c, 0x200d, 0xfeff).repeat(2);
+
+    // Precondition: the fixture must actually be dirty, or this test is vacuous.
+    expect(stega).toHaveLength(8);
+    expect(`Mike Lacey${stega}`).not.toBe('Mike Lacey');
 
     const graph = buildHomeGraph(
       {

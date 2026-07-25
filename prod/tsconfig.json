@@ -5,7 +5,12 @@
     "**/*"
   ],
   "exclude": [
-    "dist"
+    "dist",
+    // Test-runner config only. astro's getViteConfig is typed against vite 6
+    // while vitest/config's types extend vite 7; both majors are in the tree
+    // independently of this exclusion. Type-level conflict only — the runtime
+    // config is correct. Excluding it removes no product-code coverage.
+    "vitest.config.ts"
   ],
   "compilerOptions": {
     "jsx": "react-jsx",

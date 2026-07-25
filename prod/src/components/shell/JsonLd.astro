@@ -1,0 +1,27 @@
+---
+import { serializeJsonLd } from '../../utils/jsonld';
+
+interface Props {
+  /** Structured-data graph for this page. Renders nothing when absent. */
+  graph?: object | null;
+}
+
+const { graph } = Astro.props;
+---
+{/*
+  This component is the only place that knows how to emit JSON-LD, and that is
+  deliberate — the safety rules below are unenforceable from serializeJsonLd's
+  signature alone, so they live with the tag rather than beside every caller.
+
+  1. set:html is mandatory, not stylistic. `type="application/ld+json"` is a
+     non-src attribute, so Astro treats the tag as inline and never interpolates
+     {expressions} inside it — a child expression ships as literal source text.
+  2. set:html injects raw and does not escape, so serializeJsonLd must escape
+     `<` or a CMS string containing `</script>` breaks out of the block.
+  3. is:inline is already implied by the type attribute; stating it satisfies
+     astro check and documents the intent.
+
+  Comment uses {/* *\/} rather than an HTML comment so it does not ship to the
+  browser.
+*/}
+{graph && <script type="application/ld+json" is:inline set:html={serializeJsonLd(graph)} />}
