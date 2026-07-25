@@ -1,18 +1,22 @@
 ---
 import MainNav from '../components/shell/MainNav.tsx';
 import { VisualEditing } from '@sanity/astro/visual-editing';
+import JsonLd from '../components/shell/JsonLd.astro';
 import '../styles/global.css';
 
 interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  /** Structured-data graph for this page. Pages that have none omit it. */
+  jsonLd?: object | null;
 }
 
 const {
   title = 'Mike Lacey - Television Director',
   description = 'Television director specializing in sports and entertainment production.',
-  ogImage
+  ogImage,
+  jsonLd
 } = Astro.props;
 
 
@@ -56,6 +60,8 @@ const navItems = [
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+
+    <JsonLd graph={jsonLd} />
   </head>
   <body class="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100">
     <MainNav
