@@ -67,8 +67,11 @@ const navItems = [
       {expressions} inside it — a child expression would ship as literal
       source text. serializeJsonLd also escapes `<`, which set:html does not
       do on its own.
+
+      `is:inline` is already implied by the type attribute; stating it makes
+      the intent explicit and satisfies astro check.
     -->
-    {jsonLd && <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />}
+    {jsonLd && <script type="application/ld+json" is:inline set:html={serializeJsonLd(jsonLd)} />}
   </head>
   <body class="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100">
     <MainNav
