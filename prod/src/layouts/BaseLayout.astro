@@ -1,18 +1,22 @@
 ---
 import MainNav from '../components/shell/MainNav.tsx';
 import { VisualEditing } from '@sanity/astro/visual-editing';
+import { serializeJsonLd } from '../utils/jsonld';
 import '../styles/global.css';
 
 interface Props {
   title?: string;
   description?: string;
   ogImage?: string;
+  /** Structured-data graph for this page. Pages that have none omit it. */
+  jsonLd?: object | null;
 }
 
 const {
   title = 'Mike Lacey - Television Director',
   description = 'Television director specializing in sports and entertainment production.',
-  ogImage
+  ogImage,
+  jsonLd
 } = Astro.props;
 
 
@@ -56,6 +60,15 @@ const navItems = [
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+
+    <!--
+      JSON-LD must use set:html. `type="application/ld+json"` is a non-src
+      attribute, so Astro treats the tag as inline and never interpolates
+      {expressions} inside it — a child expression would ship as literal
+      source text. serializeJsonLd also escapes `<`, which set:html does not
+      do on its own.
+    -->
+    {jsonLd && <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />}
   </head>
   <body class="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100">
     <MainNav

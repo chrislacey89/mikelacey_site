@@ -2,6 +2,7 @@
 import { loadQuery } from '../lib/loadQuery';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HomeHero from '../components/home/HomeHero.astro';
+import { buildHomeGraph } from '../utils/jsonld';
 import type { CTA } from '../types';
 
 // Detect preview mode from URL (Sanity Presentation tool)
@@ -28,6 +29,10 @@ const settings = await loadQuery<any>({
         label,
         href,
         variant
+      },
+      contactInfo {
+        linkedin,
+        imdb
       }
     }
   `
@@ -42,9 +47,27 @@ const ctas: CTA[] = (settings?.ctas || []).map((cta: { id: string; label: string
     variant: cta.variant as 'primary' | 'secondary',
   };
 });
+
+// Always the canonical production origin, never Astro.url or the VERCEL_URL
+// fallback BaseLayout uses for OG images. @id values are entity identifiers —
+// a preview deploy must not assert a Mike Lacey that lives at a preview URL.
+//
+// The query above deliberately keeps stega enabled: it also feeds HomeHero,
+// where stega powers click-to-edit. buildHomeGraph calls stegaClean on its own
+// input instead, so the structured data stays clean without disabling visual
+// editing for the hero.
+const siteOrigin = Astro.site?.origin ?? 'https://www.themikelacey.com';
+const jsonLd = buildHomeGraph(
+  {
+    profile: settings?.profile,
+    hero: settings?.hero,
+    contactInfo: settings?.contactInfo,
+  },
+  siteOrigin
+);
 ---
 
-<BaseLayout title="Mike Lacey - Television Director">
+<BaseLayout title="Mike Lacey - Television Director" jsonLd={jsonLd}>
   <HomeHero
     hero={settings?.hero}
     profile={settings?.profile}
