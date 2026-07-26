@@ -40,6 +40,9 @@
     "vitest": "^3.2.7"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["lefthook"]
+    "onlyBuiltDependencies": ["lefthook"],
+    "overrides": {
+      "@tailwindcss/vite>vite": "6.4.1"
+    }
   }
 }

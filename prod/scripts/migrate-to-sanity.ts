@@ -147,7 +147,10 @@ async function migrateTimelineEvents() {
 
   let order = 0;
   for (const event of data.timelineEvents) {
-    const doc: Record<string, unknown> = {
+    // Widened rather than inferred so `doc.photo` can be assigned below, but
+    // _id/_type stay required — createOrReplace needs an identified document,
+    // and a bare Record<string, unknown> erases that guarantee.
+    const doc: { _id: string; _type: string; [key: string]: unknown } = {
       _id: generateId('timeline', event.id),
       _type: 'timelineEvent',
       year: event.year,
