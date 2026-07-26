@@ -1,12 +1,13 @@
 #!/bin/bash
 # Quality gate — runs after each Write/Edit to catch issues early.
-# Only runs on files inside the Astro app (prod/src). Skips test/config files.
+# Covers the app's src/, scripts/ and sanity/ trees. Skips test/config files.
 
 # Anchor to the project root before running any feedback loop. If the
 # directory is gone — e.g. a worktree was removed out from under the
 # shell during /closeout teardown — no-op instead of emitting false
 # MODULE_NOT_FOUND errors from a vanished node_modules. A stranded cwd
-# must never masquerade as a lint/type failure.
+# must never masquerade as a lint/type failure. This is the one case where
+# silence is right: the session is ending, there is nobody to tell.
 if [ -z "$CLAUDE_PROJECT_DIR" ] || [ ! -d "$CLAUDE_PROJECT_DIR" ]; then
   exit 0
 fi
@@ -14,7 +15,13 @@ fi
 # The Astro app is nested one level down; package.json lives there, not at the
 # repo root. Everything below runs from that directory.
 APP_DIR="$CLAUDE_PROJECT_DIR/prod"
+
+# Missing deps is NOT the teardown case — the project is present and the
+# operator is actively editing it. Say so rather than exiting 0, which would
+# report a pass for checks that never ran. A gate whose failure mode is silence
+# is indistinguishable from a gate that approves everything.
 if [ ! -d "$APP_DIR/node_modules" ]; then
+  echo "quality-gate: SKIPPED — $APP_DIR/node_modules is missing. No lint, typecheck, or tests ran. Run 'pnpm install' in prod/ to re-enable the gate." >&2
   exit 0
 fi
 cd "$APP_DIR" || exit 0

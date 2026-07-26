@@ -29,7 +29,10 @@ fi
 # Fail open, not closed, when the project dir is unknown. An unset
 # CLAUDE_PROJECT_DIR would otherwise resolve the markers to /.claude/*, which
 # cannot exist, blocking every edit with a remedy the operator cannot perform.
+# Failing open is the lesser evil, but say so — an enforcement hook that
+# disables itself without a word is worse than one that was never installed.
 if [ -z "$CLAUDE_PROJECT_DIR" ] || [ ! -d "$CLAUDE_PROJECT_DIR" ]; then
+  echo "enforce-classification: NOT ENFORCING — CLAUDE_PROJECT_DIR is unset or missing, so the classification markers cannot be located." >&2
   exit 0
 fi
 # Check for classification markers
