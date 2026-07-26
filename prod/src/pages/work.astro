@@ -49,7 +49,10 @@ const [credits, photos, interviews, pageContent] = await Promise.all([
 ]);
 ---
 
-<BaseLayout title="My Work - Mike Lacey">
+<BaseLayout
+  title="My Work - Mike Lacey"
+  description="Production credits, behind-the-scenes photos, and video interviews from Mike Lacey's work for Golf Channel, ESPN, Nickelodeon, Disney, NASCAR, and more."
+>
   <WorkSection
     credits={credits}
     photos={photos}

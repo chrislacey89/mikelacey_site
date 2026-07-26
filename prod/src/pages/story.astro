@@ -28,6 +28,9 @@ const [timelineEvents, pageContent] = await Promise.all([
 ]);
 ---
 
-<BaseLayout title="My Story - Mike Lacey">
+<BaseLayout
+  title="My Story - Mike Lacey"
+  description="Mike Lacey's television career, era by era: from a 1981 job in a New York shipping department to directing PGA Tour golf, by way of Nickelodeon, MTV, and ESPN."
+>
   <StorySection timelineEvents={timelineEvents} pageContent={pageContent} />
 </BaseLayout>
