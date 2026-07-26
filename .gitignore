@@ -1,0 +1,7 @@
+# Pipeline classification markers (created by /execute, removed at handoff)
+.claude/.tdd-active
+.claude/.tdd-skipped
+.claude/.ralph-checked
+
+# Conductor agent scratch space
+.context/
