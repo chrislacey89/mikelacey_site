@@ -12,12 +12,24 @@ for pattern in "${IMPL_PATTERNS[@]}"; do
 done
 if [ $MATCHED -eq 0 ]; then exit 0; fi
 
-# Skip test files and type declarations (extension-agnostic)
-if [[ "$FILE_PATH" == *test* || "$FILE_PATH" == *spec* || "$FILE_PATH" == *.d.ts ]]; then
+# Skip test files, type declarations, and config files.
+#
+# Matched against the basename, never the full path: file_path arrives absolute,
+# so a bare *test* would also match any ancestor directory. A worktree or branch
+# named `test-*` or `spec-*` — this repo names worktrees after the branch —
+# would silently disable the gate for every file in the repo.
+BASE_NAME=$(basename "$FILE_PATH")
+if [[ "$BASE_NAME" == *.test.* || "$BASE_NAME" == *.spec.* || "$BASE_NAME" == *.d.ts ]]; then
   exit 0
 fi
 # Skip config files (astro.config, vitest.config, sanity.config, etc.)
-if [[ "$FILE_PATH" == *.config.* ]]; then
+if [[ "$BASE_NAME" == *.config.* ]]; then
+  exit 0
+fi
+# Fail open, not closed, when the project dir is unknown. An unset
+# CLAUDE_PROJECT_DIR would otherwise resolve the markers to /.claude/*, which
+# cannot exist, blocking every edit with a remedy the operator cannot perform.
+if [ -z "$CLAUDE_PROJECT_DIR" ] || [ ! -d "$CLAUDE_PROJECT_DIR" ]; then
   exit 0
 fi
 # Check for classification markers

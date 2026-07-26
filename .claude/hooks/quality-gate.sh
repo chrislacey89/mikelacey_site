@@ -22,16 +22,21 @@ cd "$APP_DIR" || exit 0
 INPUT=$(cat)
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
-# Only gate implementation files inside the app's source tree
+# Only gate implementation files inside the directories Biome is configured for
+# (biome.json `files.includes`). Previously src/ only, which left scripts/ and
+# sanity/ ungated — including scripts/migrate-to-sanity.ts, where one of the
+# type errors this gate is meant to catch actually lived.
 case "$FILE_PATH" in
-  "$APP_DIR"/src/*) ;;
+  "$APP_DIR"/src/* | "$APP_DIR"/scripts/* | "$APP_DIR"/sanity/*) ;;
   *) exit 0 ;;
 esac
 if [[ ! "$FILE_PATH" == *.ts && ! "$FILE_PATH" == *.tsx && ! "$FILE_PATH" == *.astro && ! "$FILE_PATH" == *.js && ! "$FILE_PATH" == *.jsx ]]; then
   exit 0
 fi
-# Skip test files, type declarations, config files
-if [[ "$FILE_PATH" == *test* || "$FILE_PATH" == *spec* || "$FILE_PATH" == *.d.ts || "$FILE_PATH" == *.config.* ]]; then
+# Skip test files, type declarations, config files. Basename, not full path —
+# see enforce-classification.sh for why a bare *test* is unsafe here.
+BASE_NAME=$(basename "$FILE_PATH")
+if [[ "$BASE_NAME" == *.test.* || "$BASE_NAME" == *.spec.* || "$BASE_NAME" == *.d.ts || "$BASE_NAME" == *.config.* ]]; then
   exit 0
 fi
 
