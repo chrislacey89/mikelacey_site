@@ -46,18 +46,27 @@ fi
 BIOME_OUTPUT=$(pnpm exec biome lint --colors=off "$FILE_PATH" 2>&1)
 BIOME_EXIT=$?
 
-# 2. Type check (astro check — covers .astro, .ts, and .tsx)
-TSC_OUTPUT=$(pnpm run typecheck 2>&1)
-TSC_EXIT=$?
+# 2. Type check (astro check — covers .astro, .ts, and .tsx).
+#
+# astro check is repo-wide and has no per-file mode, so run it whole and then
+# keep only the diagnostics that name the file just written. As of this hook's
+# introduction, main already fails astro check with 3 errors (a vite 6/7 Plugin
+# type conflict in astro.config.mjs, a Sanity stub type in the migrate script,
+# and the unresolved `sanity:client` virtual module in loadQuery.ts). Blocking
+# on the exit code alone would therefore reject every edit regardless of merit.
+# Once that baseline is clean, replace this filter with a plain exit-code check.
+REL_PATH="${FILE_PATH#"$APP_DIR"/}"
+TSC_OUTPUT=$(pnpm run typecheck 2>&1 | sed 's/\x1b\[[0-9;]*m//g')
+TSC_FOR_FILE=$(echo "$TSC_OUTPUT" | grep -F "$REL_PATH" | grep -E ' - error ')
 
-if [ $BIOME_EXIT -ne 0 ] || [ $TSC_EXIT -ne 0 ]; then
+if [ $BIOME_EXIT -ne 0 ] || [ -n "$TSC_FOR_FILE" ]; then
   if [ $BIOME_EXIT -ne 0 ]; then
     echo "Biome errors found:" >&2
     echo "$BIOME_OUTPUT" >&2
     echo "" >&2
   fi
-  if [ $TSC_EXIT -ne 0 ]; then
-    echo "Type errors found:" >&2
+  if [ -n "$TSC_FOR_FILE" ]; then
+    echo "Type errors found in $REL_PATH:" >&2
     echo "$TSC_OUTPUT" >&2
   fi
   exit 2
