@@ -34,10 +34,11 @@ const paragraphs = event.narrative.split('\n\n');
     <!-- Timeline Dot (Desktop only) -->
     <div class="hidden md:block absolute -left-[22px] top-1 w-3 h-3 rounded-full bg-blue-600 dark:bg-blue-400 ring-4 ring-stone-50 dark:ring-stone-950"></div>
 
-    <!-- Era Title -->
-    <h3 class="text-sm font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-4">
+    <!-- Era Title: h2 so eras are siblings of the footer CTA heading, not nested
+         below it. Styling stays small/uppercase — the level is semantic, not visual. -->
+    <h2 class="text-sm font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400 mb-4">
       {event.title}
-    </h3>
+    </h2>
 
     <!-- Narrative -->
     <div class="prose prose-stone dark:prose-invert max-w-none">
