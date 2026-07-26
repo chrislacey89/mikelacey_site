@@ -10,7 +10,8 @@
     "typecheck": "astro check",
     "test": "vitest run",
     "test:watch": "vitest",
-    "migrate": "tsx scripts/migrate-to-sanity.ts"
+    "migrate": "tsx scripts/migrate-to-sanity.ts",
+    "prepare": "lefthook install"
   },
   "dependencies": {
     "@astrojs/react": "^4.4.2",
@@ -40,7 +41,9 @@
     "vitest": "^3.2.7"
   },
   "pnpm": {
-    "onlyBuiltDependencies": ["lefthook"],
+    "onlyBuiltDependencies": [
+      "lefthook"
+    ],
     "overrides": {
       "@tailwindcss/vite>vite": "6.4.1"
     }
