@@ -2,6 +2,7 @@
 import { loadQuery } from '../lib/loadQuery';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HomeHero from '../components/home/HomeHero.astro';
+import { PRODUCTION_ORIGIN } from '../utils/canonical';
 import { buildHomeGraph } from '../utils/jsonld';
 import type { CTA } from '../types';
 
@@ -56,7 +57,7 @@ const ctas: CTA[] = (settings?.ctas || []).map((cta: { id: string; label: string
 // where stega powers click-to-edit. buildHomeGraph calls stegaClean on its own
 // input instead, so the structured data stays clean without disabling visual
 // editing for the hero.
-const siteOrigin = Astro.site?.origin ?? 'https://www.themikelacey.com';
+const siteOrigin = Astro.site?.origin ?? PRODUCTION_ORIGIN;
 const jsonLd = buildHomeGraph(
   {
     profile: settings?.profile,
