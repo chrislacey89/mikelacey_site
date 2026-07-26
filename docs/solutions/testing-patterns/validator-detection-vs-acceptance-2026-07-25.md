@@ -60,7 +60,7 @@ Both are idiomatic JSON-LD. Both pass `validator.schema.org` with zero errors. `
 - **Applies when:** the verification tool reports against a curated feature list, rule set, or supported-type registry rather than a total specification — structured-data validators, linters with configurable rule sets, accessibility checkers, security scanners, SEO auditors, LLM-judge rubrics. The tell is that the tool can legitimately have *nothing to say* about valid input.
 - **Also applies when:** a null/zero result is the *success* signal. Any assertion of the form "no errors were reported" needs a negative control; assertions of the form "the expected value was returned" generally do not, because a broken harness surfaces as a mismatch rather than a pass.
 - **Inverts or does not apply when:** the tool is a strict total parser whose only outputs are pass and fail against a complete grammar — `JSON.parse`, a compiler front-end, a schema validator running a closed schema. There, absence of error genuinely means conformance, and adding negative controls is ceremony.
-- **Sibling docs:** [Astro JSON-LD emission and escaping](../integration-issues/astro-jsonld-emission-and-escaping-2026-07-25.md) — the implementation half of this same feature.
+- **Sibling docs:** [Astro JSON-LD emission and escaping](../integration-issues/astro-jsonld-emission-and-escaping-2026-07-25.md) — the implementation half of this same feature. [Enforcement gates that fail silent](../devops/enforcement-gates-that-fail-silent-2026-07-25.md) — the same "never trust a zero" principle for gates you *author* rather than consume; there you also own proving the check can fail, and the null-success shape is the tool's contract rather than an artifact of a curated rule set.
 
 ## Solution
 
