@@ -31,7 +31,10 @@ const settings = await loadQuery<any>({
 const professionalLinks = (settings?.professionalLinks || []) as ProfessionalLink[];
 ---
 
-<BaseLayout title="Connect - Mike Lacey">
+<BaseLayout
+  title="Connect - Mike Lacey"
+  description="Get in touch with television director Mike Lacey: send a message, save his contact card, or find him on IMDb and LinkedIn."
+>
   <ConnectSection
     contactInfo={settings?.contactInfo || connectData.contactInfo}
     professionalLinks={professionalLinks}

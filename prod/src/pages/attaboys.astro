@@ -26,6 +26,9 @@ const [testimonials, pageContent] = await Promise.all([
 ]);
 ---
 
-<BaseLayout title="Attaboys - Mike Lacey">
+<BaseLayout
+  title="Attaboys - Mike Lacey"
+  description="Thank-you letters and notes of recognition sent to television director Mike Lacey by colleagues at the LPGA, Nickelodeon, MTV, and Children's Miracle Network."
+>
   <AttaboysSection testimonials={testimonials} pageContent={pageContent} />
 </BaseLayout>

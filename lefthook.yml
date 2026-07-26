@@ -1,0 +1,14 @@
+# The Astro app lives in prod/, so every command runs with that as its root and
+# lefthook narrows {staged_files} to paths beneath it.
+#
+# Typecheck (`astro check`) is deliberately absent — it is too slow for a
+# pre-commit hook. It runs in the PostToolUse quality gate during editing and
+# again in /execute Step 4 before handoff. Add a pre-push `vitest run` once the
+# suite is broad enough to be worth the wait.
+pre-commit:
+  commands:
+    check:
+      root: "prod/"
+      glob: "*.{js,jsx,ts,tsx,json,jsonc}"
+      run: pnpm exec biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --colors=off {staged_files}
+      stage_fixed: true

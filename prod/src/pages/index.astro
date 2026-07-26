@@ -67,7 +67,11 @@ const jsonLd = buildHomeGraph(
 );
 ---
 
-<BaseLayout title="Mike Lacey - Television Director" jsonLd={jsonLd}>
+<BaseLayout
+  title="Mike Lacey - Television Director"
+  description="Television director Mike Lacey has spent four decades in live sports and entertainment, from a New York shipping department to directing PGA Tour golf."
+  jsonLd={jsonLd}
+>
   <HomeHero
     hero={settings?.hero}
     profile={settings?.profile}
