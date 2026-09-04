@@ -1,14 +1,20 @@
 ---
-import { loadQuery } from '../lib/loadQuery';
-import BaseLayout from '../layouts/BaseLayout.astro';
 import ConnectSection from '../components/connect/Connect.astro';
 import connectData from '../data/connect.json';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadQuery } from '../lib/loadQuery';
 import type { ProfessionalLink } from '../types';
+import { PRODUCTION_ORIGIN } from '../utils/canonical';
+import { buildContactPerson, buildPageGraph } from '../utils/jsonld';
+import { isPreviewRequest } from '../utils/preview';
+import { findSitePage } from '../utils/site-pages';
+
+const page = findSitePage('/connect')!;
 
 const FORMSPREE_ID = 'mlgednnn';
 
 // Detect preview mode from URL (Sanity Presentation tool)
-const preview = Astro.url.searchParams.has('preview') || Astro.url.searchParams.has('sanity-preview');
+const preview = isPreviewRequest(Astro.url);
 
 // Fetch contact data from Sanity
 const settings = await loadQuery<any>({
@@ -25,18 +31,49 @@ const settings = await loadQuery<any>({
       },
       sectionContent
     }
-  `
+  `,
 });
 
 const professionalLinks = (settings?.professionalLinks || []) as ProfessionalLink[];
+
+const contactInfo = settings?.contactInfo || connectData.contactInfo;
+const origin = Astro.site?.origin ?? PRODUCTION_ORIGIN;
+
+// The one page where email and telephone are visible to a reader, which is
+// Google's condition for marking them up. Same @id as the homepage Person, so
+// this adds two properties to that entity rather than declaring a second one.
+// No jobTitle. contactInfo.title is the vCard's short form ("Director") while
+// the homepage Person carries the full one, and both nodes share an @id — two
+// jobTitles for one entity is the graph muddying this file's sibling comment
+// warns about. The homepage owns the descriptive properties; this page adds
+// only the two that are visible here.
+const contactPerson = buildContactPerson(
+  {
+    name: contactInfo.fullName,
+    email: contactInfo.email,
+    phone: contactInfo.phone,
+    linkedin: contactInfo.linkedin,
+    imdb: contactInfo.imdb,
+  },
+  origin,
+);
+
+const jsonLd = buildPageGraph(
+  {
+    path: page.path,
+    name: page.title,
+    description: page.description,
+    type: 'ContactPage',
+    breadcrumbLabel: page.navLabel,
+    extraNodes: contactPerson ? [contactPerson] : [],
+  },
+  origin,
+);
 ---
 
-<BaseLayout
-  title="Connect - Mike Lacey"
-  description="Get in touch with television director Mike Lacey: send a message, save his contact card, or find him on IMDb and LinkedIn."
->
+<BaseLayout title={page.title} description={page.description} jsonLd={jsonLd}>
   <ConnectSection
-    contactInfo={settings?.contactInfo || connectData.contactInfo}
+    contactInfo={contactInfo}
     professionalLinks={professionalLinks}
     formFields={connectData.formFields}
     sectionContent={settings?.sectionContent || connectData.sectionContent}

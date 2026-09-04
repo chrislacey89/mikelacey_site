@@ -1,53 +1,77 @@
 ---
-import { loadQuery } from '../lib/loadQuery';
-import BaseLayout from '../layouts/BaseLayout.astro';
+import HomeCredits from '../components/home/HomeCredits.astro';
 import HomeHero from '../components/home/HomeHero.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadQuery } from '../lib/loadQuery';
+import type { Credit, CTA } from '../types';
 import { PRODUCTION_ORIGIN } from '../utils/canonical';
 import { buildHomeGraph } from '../utils/jsonld';
-import type { CTA } from '../types';
+import { isPreviewRequest } from '../utils/preview';
+import { SITE_PAGES } from '../utils/site-pages';
+
+const page = SITE_PAGES[0];
 
 // Detect preview mode from URL (Sanity Presentation tool)
-const preview = Astro.url.searchParams.has('preview') || Astro.url.searchParams.has('sanity-preview');
+const preview = isPreviewRequest(Astro.url);
 
 // Fetch site settings from Sanity
-const settings = await loadQuery<any>({
-  preview,
-  query: `
-    *[_type == "siteSettings"][0] {
-      hero {
-        "backgroundImage": backgroundImage.asset->url,
-        headline,
-        tagline
-      },
-      profile {
-        name,
-        title,
-        "headshotImage": headshotImage.asset->url,
-        subtitle
-      },
-      ctas[] {
-        "id": _key,
-        label,
-        href,
-        variant
-      },
-      contactInfo {
-        linkedin,
-        imdb
+const [settings, credits] = await Promise.all([
+  loadQuery<any>({
+    preview,
+    query: `
+      *[_type == "siteSettings"][0] {
+        hero {
+          "backgroundImage": backgroundImage.asset->url,
+          headline,
+          tagline
+        },
+        profile {
+          name,
+          title,
+          "headshotImage": headshotImage.asset->url,
+          subtitle
+        },
+        ctas[] {
+          "id": _key,
+          label,
+          href,
+          variant
+        },
+        contactInfo {
+          linkedin,
+          imdb
+        }
       }
-    }
-  `
-});
+    `,
+  }),
+  // Server-rendered on the homepage as well as /work. Before this the homepage
+  // delivered 622 characters of extractable text against 13 KB of markup — a
+  // near-shell to any crawler that does not run JavaScript, which is most of
+  // the AI ones. The credits are the site's most concrete, most citable facts
+  // and they were reachable only one click away.
+  loadQuery<Credit[]>({
+    preview,
+    query: `
+      *[_type == "credit"] | order(name asc) {
+        "id": _id,
+        name,
+        network
+      }
+    `,
+  }),
+]);
 
-const ctas: CTA[] = (settings?.ctas || []).map((cta: { id: string; label: string; href: string; variant: string }) => {
-  if (cta.variant !== 'primary' && cta.variant !== 'secondary') {
-    throw new Error(`Invalid CTA variant: ${cta.variant}`);
-  }
-  return {
-    ...cta,
-    variant: cta.variant as 'primary' | 'secondary',
-  };
-});
+const ctas: CTA[] = (settings?.ctas || []).map(
+  (cta: { id: string; label: string; href: string; variant: string }) => {
+    if (cta.variant !== 'primary' && cta.variant !== 'secondary') {
+      throw new Error(`Invalid CTA variant: ${cta.variant}`);
+    }
+    return {
+      ...cta,
+      variant: cta.variant as 'primary' | 'secondary',
+    };
+  },
+);
 
 // Always the canonical production origin, never Astro.url or the VERCEL_URL
 // fallback BaseLayout uses for OG images. @id values are entity identifiers —
@@ -64,18 +88,15 @@ const jsonLd = buildHomeGraph(
     hero: settings?.hero,
     contactInfo: settings?.contactInfo,
   },
-  siteOrigin
+  siteOrigin,
 );
 ---
 
-<BaseLayout
-  title="Mike Lacey - Television Director"
-  description="Television director Mike Lacey has spent four decades in live sports and entertainment, from a New York shipping department to directing PGA Tour golf."
-  jsonLd={jsonLd}
->
+<BaseLayout title={page.title} description={page.description} jsonLd={jsonLd}>
   <HomeHero
     hero={settings?.hero}
     profile={settings?.profile}
     ctas={ctas}
   />
+  <HomeCredits credits={credits ?? []} heading="Selected Production Credits" />
 </BaseLayout>

@@ -1,0 +1,51 @@
+---
+import type { Credit } from '../../types';
+
+interface Props {
+  credits: Credit[];
+  heading: string;
+}
+
+const { credits, heading } = Astro.props;
+
+// Names only, and only real ones. A few CMS rows carry a whitespace-only
+// network, which rendered as an empty line on /work; here the network is folded
+// into the same line so an absent one simply does not appear.
+const listed = credits.filter((credit) => credit.name?.trim());
+---
+
+{listed.length > 0 && (
+  <section aria-labelledby="home-credits-heading" class="bg-stone-100 dark:bg-stone-900 py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2
+        id="home-credits-heading"
+        class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white"
+      >
+        {heading}
+      </h2>
+
+      <ul class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {listed.map((credit) => (
+          <li class="rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 px-4 py-3">
+            <span class="font-medium text-stone-900 dark:text-white">{credit.name}</span>
+            {credit.network?.trim() && (
+              <span class="block text-sm text-stone-500 dark:text-stone-400">
+                {credit.network.trim()}
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
+
+      <p class="mt-8">
+        <a
+          href="/work"
+          class="inline-flex items-center gap-2 font-semibold text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          See the full credit list, photos, and interviews
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+      </p>
+    </div>
+  </section>
+)}

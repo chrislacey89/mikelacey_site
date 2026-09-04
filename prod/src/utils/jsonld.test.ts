@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { buildHomeGraph, serializeJsonLd, type HomeGraphInput } from './jsonld';
+import {
+  buildContactPerson,
+  buildHomeGraph,
+  buildItemList,
+  buildPageGraph,
+  type HomeGraphInput,
+  serializeJsonLd,
+} from './jsonld';
 
 const ORIGIN = 'https://www.themikelacey.com';
 
@@ -11,7 +18,9 @@ const fullInput: HomeGraphInput = {
     title: 'Television Director',
     headshotImage: 'https://cdn.sanity.io/images/yi6f32nh/production/headshot.jpg',
   },
-  hero: { tagline: 'A career built on passion, respect, and making every show the best it can be.' },
+  hero: {
+    tagline: 'A career built on passion, respect, and making every show the best it can be.',
+  },
   contactInfo: {
     linkedin: 'https://www.linkedin.com/in/mike-lacey-35926513/',
     imdb: 'https://www.imdb.com/name/nm0479943/',
@@ -83,9 +92,9 @@ describe('buildHomeGraph', () => {
       ORIGIN,
     );
 
-    expect((nodeOfType(withImage, 'ProfilePage')?.mainEntity as JsonLdNode).image).toBe(
-      fullInput.profile?.headshotImage,
-    );
+    const withImagePage = nodeOfType(withImage, 'ProfilePage') as JsonLdNode;
+
+    expect((withImagePage.mainEntity as JsonLdNode).image).toBe(fullInput.profile?.headshotImage);
     expect(nodeOfType(withoutImage, 'ProfilePage')?.mainEntity as JsonLdNode).not.toHaveProperty(
       'image',
     );
@@ -95,7 +104,9 @@ describe('buildHomeGraph', () => {
   // invalid, and an invalid block is worse than no block: it fails validation
   // and asserts nothing. Callers treat null as "emit no script tag".
   it('returns null when the profile has no name', () => {
-    expect(buildHomeGraph({ ...fullInput, profile: { title: 'Television Director' } }, ORIGIN)).toBeNull();
+    expect(
+      buildHomeGraph({ ...fullInput, profile: { title: 'Television Director' } }, ORIGIN),
+    ).toBeNull();
     expect(buildHomeGraph({ ...fullInput, profile: null }, ORIGIN)).toBeNull();
     expect(buildHomeGraph({}, ORIGIN)).toBeNull();
   });
@@ -191,6 +202,140 @@ describe('buildHomeGraph', () => {
     expect(website?.publisher).toEqual({ '@id': `${ORIGIN}/#person` });
     expect(profilePage?.isPartOf).toEqual({ '@id': `${ORIGIN}/#website` });
     expect(profilePage?.url).toBe(`${ORIGIN}/`);
-    expect((profilePage?.mainEntity as JsonLdNode).url).toBe(`${ORIGIN}/`);
+    expect((profilePage?.mainEntity as JsonLdNode | undefined)?.url).toBe(`${ORIGIN}/`);
+  });
+});
+
+describe('buildPageGraph', () => {
+  const graph = buildPageGraph(
+    {
+      path: '/work',
+      name: 'My Work - Mike Lacey',
+      description: 'Production credits.',
+      type: 'CollectionPage',
+      breadcrumbLabel: 'Production Credits',
+    },
+    ORIGIN,
+  );
+
+  const nodeOf = (type: string) =>
+    graph['@graph'].find((node) => node['@type'] === type) as JsonLdNode | undefined;
+
+  // The whole point of an inner-page graph: describe the page, point at the
+  // entity. Redescribing the Person here would put two competing descriptions
+  // of one @id into the graph, and nothing would report it.
+  it('refers to the Person by @id rather than restating it', () => {
+    const page = nodeOf('CollectionPage');
+
+    expect(page?.about).toEqual({ '@id': `${ORIGIN}/#person` });
+    expect(graph['@graph'].some((node) => node['@type'] === 'Person')).toBe(false);
+  });
+
+  it('joins the page to the WebSite the homepage declares', () => {
+    expect(nodeOf('CollectionPage')?.isPartOf).toEqual({ '@id': `${ORIGIN}/#website` });
+  });
+
+  it('builds a two-level breadcrumb that resolves to real URLs', () => {
+    const crumbs = nodeOf('BreadcrumbList')?.itemListElement as JsonLdNode[];
+
+    expect(crumbs).toHaveLength(2);
+    expect(crumbs[0]).toMatchObject({ position: 1, name: 'Home', item: `${ORIGIN}/` });
+    expect(crumbs[1]).toMatchObject({
+      position: 2,
+      name: 'Production Credits',
+      item: `${ORIGIN}/work`,
+    });
+  });
+
+  it('links the page node to its breadcrumb by @id', () => {
+    expect(nodeOf('CollectionPage')?.breadcrumb).toEqual({
+      '@id': `${ORIGIN}/work#breadcrumb`,
+    });
+    expect(nodeOf('BreadcrumbList')?.['@id']).toBe(`${ORIGIN}/work#breadcrumb`);
+  });
+
+  it('appends extra nodes as graph siblings', () => {
+    const withExtra = buildPageGraph(
+      {
+        path: '/work',
+        name: 'n',
+        description: 'd',
+        type: 'CollectionPage',
+        breadcrumbLabel: 'b',
+        extraNodes: [{ '@type': 'ItemList' }],
+      },
+      ORIGIN,
+    );
+
+    expect(withExtra['@graph']).toHaveLength(3);
+    expect(withExtra['@graph'][2]).toEqual({ '@type': 'ItemList' });
+  });
+});
+
+describe('buildItemList', () => {
+  it('numbers its members from one', () => {
+    const list = buildItemList('#credits', 'Credits', [
+      { name: 'PGA Tour Live', description: 'Streaming' },
+      { name: 'The Mickey Mouse Club', description: 'Disney Channel' },
+    ]);
+
+    const items = (list?.itemListElement ?? []) as JsonLdNode[];
+
+    expect(list?.numberOfItems).toBe(2);
+    expect(items[0]).toMatchObject({ position: 1, name: 'PGA Tour Live' });
+  });
+
+  // An empty ItemList is not a smaller claim than a full one — it asserts the
+  // page lists nothing, which is false whenever the query simply came back
+  // empty.
+  it('returns nothing at all for an empty list', () => {
+    expect(buildItemList('#credits', 'Credits', [])).toBeUndefined();
+    expect(buildItemList('#credits', 'Credits', [{ name: '  ' }])).toBeUndefined();
+  });
+
+  // A whitespace-only network exists in the CMS today, and `description: ""`
+  // would be an unresolvable property rather than an absent one.
+  it('drops a blank description rather than emitting an empty string', () => {
+    const list = buildItemList('#credits', 'Credits', [{ name: 'A', description: '   ' }]);
+
+    const items = (list?.itemListElement ?? []) as JsonLdNode[];
+
+    expect(items[0]).not.toHaveProperty('description');
+  });
+});
+
+describe('buildContactPerson', () => {
+  const person = buildContactPerson(
+    {
+      name: 'Mike Lacey',
+      jobTitle: 'Television Director',
+      email: 'themikelacey@gmail.com',
+      phone: '+1-407-257-6132',
+      linkedin: 'https://www.linkedin.com/in/mike-lacey-35926513/',
+      imdb: 'https://m.imdb.com/name/nm0479943/',
+    },
+    ORIGIN,
+  );
+
+  // Same @id as the homepage Person, so consumers merge the two rather than
+  // recording a second individual who shares a name.
+  it('adds to the homepage entity rather than declaring a second one', () => {
+    expect(person?.['@id']).toBe(`${ORIGIN}/#person`);
+    expect(person?.url).toBe(`${ORIGIN}/`);
+  });
+
+  it('carries the two properties the homepage deliberately withholds', () => {
+    expect(person?.email).toBe('themikelacey@gmail.com');
+    expect(person?.telephone).toBe('+1-407-257-6132');
+  });
+
+  it('canonicalises the IMDb host here too', () => {
+    expect(person?.sameAs).toContain('https://www.imdb.com/name/nm0479943/');
+  });
+
+  // `name` is what makes the node identify anyone. Without it the block would
+  // assert an email against nothing.
+  it('emits no node at all without a name', () => {
+    expect(buildContactPerson({ email: 'a@b.com' }, ORIGIN)).toBeNull();
   });
 });

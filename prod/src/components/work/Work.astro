@@ -1,5 +1,6 @@
 ---
-import type { Credit, Photo, Interview } from '../../types';
+import type { Credit, Interview, Photo } from '../../types';
+import { sanityImageDimensions, sanityImageUrl } from '../../utils/sanity-image';
 import CreditsGrid from './CreditsGrid.astro';
 import PhotoGallery from './PhotoGallery.tsx';
 import VideoInterviews from './VideoInterviews.astro';
@@ -31,14 +32,28 @@ const { credits, photos, interviews, pageContent } = Astro.props;
 // Defaults for page content
 const eyebrow = pageContent?.eyebrow || 'Portfolio';
 const title = pageContent?.title || 'My Work';
-const intro = pageContent?.intro || 'Years of television production — from camera operation to directing major sports and entertainment broadcasts.';
+const intro =
+  pageContent?.intro ||
+  'Years of television production — from camera operation to directing major sports and entertainment broadcasts.';
 const creditsHeading = pageContent?.creditsHeading || 'Production Credits';
 const photosHeading = pageContent?.photosHeading || 'Behind the Scenes';
 const videosHeading = pageContent?.videosHeading || 'Video Interviews';
 const footerHeading = pageContent?.footer?.heading || "Let's Collaborate";
-const footerParagraph = pageContent?.footer?.paragraph || "Looking for an experienced director for your next production? I'd love to hear about your project.";
+const footerParagraph =
+  pageContent?.footer?.paragraph ||
+  "Looking for an experienced director for your next production? I'd love to hear about your project.";
 const ctaLabel = pageContent?.footer?.ctaLabel || 'Get in Touch';
 const ctaHref = pageContent?.footer?.ctaHref || '/connect';
+
+// Derived here rather than inside PhotoGallery: the gallery is a client island,
+// and `sanityImageUrl` pulls in stega, which has no business in a browser
+// bundle. The grid column is ~360px wide at the widest breakpoint, so 800
+// covers it at 2x while the lightbox keeps the untouched `src`.
+const galleryPhotos = photos.map((photo) => ({
+  ...photo,
+  thumbSrc: sanityImageUrl(photo.src, { width: 800, quality: 80 }),
+  ...sanityImageDimensions(photo.src),
+}));
 ---
 
 <div class="min-h-screen bg-stone-50 dark:bg-stone-900">
@@ -58,7 +73,8 @@ const ctaHref = pageContent?.footer?.ctaHref || '/connect';
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-16">
+  {/* A div, not a main element: see the note in Story.astro. */}
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-16">
     <!-- Credits Section -->
     <section>
       <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mb-8">
@@ -72,7 +88,7 @@ const ctaHref = pageContent?.footer?.ctaHref || '/connect';
       <h2 class="text-2xl sm:text-3xl font-bold text-stone-900 dark:text-white mb-8">
         {photosHeading}
       </h2>
-      <PhotoGallery client:visible photos={photos} />
+      <PhotoGallery client:visible photos={galleryPhotos} />
     </section>
 
     <!-- Videos Section -->
@@ -82,7 +98,7 @@ const ctaHref = pageContent?.footer?.ctaHref || '/connect';
       </h2>
       <VideoInterviews interviews={interviews} />
     </section>
-  </main>
+  </div>
 
   <!-- Footer CTA -->
   <footer class="bg-stone-100 dark:bg-stone-800/50 py-16">

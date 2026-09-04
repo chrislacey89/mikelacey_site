@@ -1,9 +1,8 @@
 ---
-import type { ContactInfo, ProfessionalLink, FormFields, SectionContent } from '../../types';
+import type { ContactInfo, FormFields, ProfessionalLink, SectionContent } from '../../types';
 import ContactForm from './ContactForm.tsx';
-import QRCodeCard from './QRCodeCard.tsx';
 import ProfessionalLinks from './ProfessionalLinks.astro';
-import { generateVCardQR } from '../../utils/qrcode';
+import QRCodeCard from './QRCodeCard.tsx';
 
 interface Props {
   contactInfo: ContactInfo;
@@ -15,8 +14,16 @@ interface Props {
 
 const { contactInfo, professionalLinks, formFields, sectionContent, formspreeId } = Astro.props;
 
-// Generate QR code at build time
-const qrCodeDataUrl = await generateVCardQR(contactInfo);
+// The QR code is a URL, not a data URL. Inlined, its base64 shipped twice on
+// every load — once in the <img> and once in this island's serialised props —
+// for 33 KB of markup that a cached image request replaces with 15 bytes.
+const qrCodeUrl = '/vcard-qr.png';
+
+// Both islands are client:visible rather than client:load. The form is safe to
+// defer because it now carries a working `action` — see the comment in
+// ContactForm.tsx — and the QR card's only interactive part is a download
+// button. Neither is above the fold on a phone, where the column order puts
+// them second.
 ---
 
 <div class="min-h-screen bg-stone-50 dark:bg-stone-900">
@@ -36,7 +43,8 @@ const qrCodeDataUrl = await generateVCardQR(contactInfo);
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+  {/* A div, not a main element: see the note in Story.astro. */}
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
     <div class="grid lg:grid-cols-2 gap-12 lg:gap-16">
       <!-- Contact Form -->
       <div class="order-2 lg:order-1">
@@ -44,14 +52,14 @@ const qrCodeDataUrl = await generateVCardQR(contactInfo);
           <h2 class="text-2xl font-bold text-stone-900 dark:text-white mb-6">
             Send a Message
           </h2>
-          <ContactForm client:load formFields={formFields} formspreeId={formspreeId} />
+          <ContactForm client:visible formFields={formFields} formspreeId={formspreeId} />
         </div>
       </div>
 
       <!-- vCard & Links Column -->
       <div class="order-1 lg:order-2 space-y-8">
         <!-- QR Code Card -->
-        <QRCodeCard client:load contactInfo={contactInfo} qrCodeDataUrl={qrCodeDataUrl} />
+        <QRCodeCard client:visible contactInfo={contactInfo} qrCodeDataUrl={qrCodeUrl} />
 
         <!-- Professional Links -->
         <ProfessionalLinks links={professionalLinks} />
@@ -84,5 +92,5 @@ const qrCodeDataUrl = await generateVCardQR(contactInfo);
         </div>
       </div>
     </div>
-  </main>
+  </div>
 </div>

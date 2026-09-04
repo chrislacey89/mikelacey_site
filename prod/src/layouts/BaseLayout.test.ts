@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { getContainerRenderer } from '@astrojs/react';
 import { experimental_AstroContainer as AstroContainer } from 'astro/container';
 import { describe, expect, it } from 'vitest';
+import { SITE_PAGES } from '../utils/site-pages';
 import BaseLayout from './BaseLayout.astro';
 
 const DEFAULT_DESCRIPTION =
@@ -79,7 +80,11 @@ describe('BaseLayout.astro canonical link', () => {
     );
 
     expect(html.match(CANONICAL)?.[1]).toBe('https://www.themikelacey.com/story');
-    expect(html).toContain('property="og:url" content="https://mikelacey-git-abc123.vercel.app');
+    // og:url follows the canonical, not the request. It used to echo
+    // Astro.url.href, which meant a preview deploy — and any real URL carrying
+    // a query string — published itself as the address to share.
+    expect(html).toContain('<meta property="og:url" content="https://www.themikelacey.com/story"');
+    expect(html).not.toContain('mikelacey-git-abc123.vercel.app');
   });
 
   it('normalises request variants onto one address', async () => {
@@ -96,12 +101,27 @@ describe('BaseLayout.astro canonical link', () => {
 // time, so rendering them in a container would need the network stubbed. The
 // regression this guards is a page *ceasing to pass the prop* — which is a fact
 // about the call site, and is exactly what issue #8 was.
+//
+// Pages now thread their metadata from SITE_PAGES rather than repeating string
+// literals, so resolving a call site means following that reference. The check
+// is the same one; a page that stopped passing a description, or whose
+// inventory entry went missing, still fails here.
 describe('every page passes its own description', () => {
   const pagesDir = join(import.meta.dirname, '..', 'pages');
   const pages = readdirSync(pagesDir).filter((f) => f.endsWith('.astro'));
 
-  const descriptionOf = (file: string) =>
-    readFileSync(join(pagesDir, file), 'utf-8').match(/description="([^"]+)"/)?.[1];
+  const pathForFile = (file: string) =>
+    file === 'index.astro' ? '/' : `/${file.replace(/\.astro$/, '')}`;
+
+  const descriptionOf = (file: string) => {
+    const source = readFileSync(join(pagesDir, file), 'utf-8');
+
+    const literal = source.match(/description="([^"]+)"/)?.[1];
+    if (literal) return literal;
+
+    if (!/description=\{page\.description\}/.test(source)) return undefined;
+    return SITE_PAGES.find((entry) => entry.path === pathForFile(file))?.description;
+  };
 
   it.each(pages)('%s declares a non-default description', (file) => {
     const description = descriptionOf(file);
@@ -114,5 +134,47 @@ describe('every page passes its own description', () => {
     const found = pages.map(descriptionOf).filter(Boolean);
 
     expect(new Set(found).size).toBe(found.length);
+  });
+});
+
+describe('BaseLayout.astro indexing directives', () => {
+  // A canonical is a nomination for indexing. Emitted next to noindex it states
+  // two contradictory things about one URL, and the 404 handler is the one
+  // route that must not nominate itself — it answers for every unknown path on
+  // the site, so a self-canonical there is a canonical for infinitely many URLs.
+  it('swaps the canonical for a robots directive when noindex is set', async () => {
+    const html = await render({ title: 'T', noindex: true });
+
+    expect(html).toContain('<meta name="robots" content="noindex, follow"');
+    expect(html).not.toContain('rel="canonical"');
+  });
+
+  it('emits a canonical and no robots directive by default', async () => {
+    const html = await render({ title: 'T' });
+
+    expect(html).toContain('rel="canonical"');
+    expect(html).not.toContain('name="robots"');
+  });
+});
+
+describe('BaseLayout.astro markdown alternate', () => {
+  it('advertises the markdown companion of an inventory page', async () => {
+    const html = await render({ title: 'T' }, new Request('https://www.themikelacey.com/story'));
+
+    expect(html).toContain('<link rel="alternate" type="text/markdown" href="/story.md"');
+  });
+
+  it('advertises /index.md for the homepage', async () => {
+    const html = await render({ title: 'T' }, new Request('https://www.themikelacey.com/'));
+
+    expect(html).toContain('href="/index.md"');
+  });
+
+  // Pointing at a `.md` address that 404s is worse than staying quiet: it looks
+  // like a working route to anything that reads the head without fetching it.
+  it('stays quiet on a page with no markdown companion', async () => {
+    const html = await render({ title: 'T' }, new Request('https://www.themikelacey.com/nope'));
+
+    expect(html).not.toContain('type="text/markdown"');
   });
 });

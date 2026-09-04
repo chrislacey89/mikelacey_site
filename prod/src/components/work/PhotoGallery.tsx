@@ -14,13 +14,16 @@ export default function PhotoGallery({ photos }: PhotoGalleryProps) {
       <div className="columns-1 sm:columns-2 lg:columns-3 gap-4 space-y-4">
         {photos.map((photo) => (
           <button
+            type="button"
             key={photo.id}
             onClick={() => setSelectedPhoto(photo)}
             className="group relative w-full overflow-hidden rounded-lg bg-stone-200 dark:bg-stone-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 break-inside-avoid"
           >
             <img
-              src={photo.src}
+              src={photo.thumbSrc ?? photo.src}
               alt={photo.alt}
+              width={photo.width}
+              height={photo.height}
               loading="lazy"
               decoding="async"
               className="w-full h-auto object-contain transition-transform duration-300 group-hover:scale-105"
@@ -35,10 +38,7 @@ export default function PhotoGallery({ photos }: PhotoGalleryProps) {
       </div>
 
       {selectedPhoto && (
-        <PhotoLightbox
-          photo={selectedPhoto}
-          onClose={() => setSelectedPhoto(null)}
-        />
+        <PhotoLightbox photo={selectedPhoto} onClose={() => setSelectedPhoto(null)} />
       )}
     </>
   );

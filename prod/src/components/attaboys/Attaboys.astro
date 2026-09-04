@@ -1,5 +1,6 @@
 ---
 import type { Testimonial } from '../../types';
+import { sanityImageUrl } from '../../utils/sanity-image';
 import DocumentGallery from './DocumentGallery.tsx';
 
 interface PageContent {
@@ -24,11 +25,23 @@ const { testimonials, pageContent } = Astro.props;
 // Defaults for page content
 const eyebrow = pageContent?.eyebrow || 'Recognition';
 const title = pageContent?.title || 'Attaboys';
-const intro = pageContent?.intro || 'Thank-you notes, letters, and recognition from colleagues and industry professionals.';
+const intro =
+  pageContent?.intro ||
+  'Thank-you notes, letters, and recognition from colleagues and industry professionals.';
 const footerHeading = pageContent?.footer?.heading || "Let's Create Something Great";
-const footerParagraph = pageContent?.footer?.paragraph || "Ready to work with a director who's passionate about making every show the best it can be?";
+const footerParagraph =
+  pageContent?.footer?.paragraph ||
+  "Ready to work with a director who's passionate about making every show the best it can be?";
 const ctaLabel = pageContent?.footer?.ctaLabel || 'Get in Touch';
 const ctaHref = pageContent?.footer?.ctaHref || '/connect';
+
+// Grid tiles are a fixed 3:4 box roughly 360px wide; the lightbox still opens
+// the untouched `src`. Same reason as Work.astro for doing it here rather than
+// inside the island.
+const galleryTestimonials = testimonials.map((testimonial) => ({
+  ...testimonial,
+  thumbSrc: sanityImageUrl(testimonial.src, { width: 800, height: 1067, fit: 'crop', quality: 80 }),
+}));
 ---
 
 <div class="min-h-screen bg-stone-50 dark:bg-stone-900">
@@ -48,10 +61,10 @@ const ctaHref = pageContent?.footer?.ctaHref || '/connect';
     </div>
   </header>
 
-  <!-- Gallery -->
-  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-    <DocumentGallery client:visible testimonials={testimonials} />
-  </main>
+  {/* Gallery. A div, not a main element: see the note in Story.astro. */}
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+    <DocumentGallery client:visible testimonials={galleryTestimonials} />
+  </div>
 
   <!-- Footer CTA -->
   <footer class="bg-stone-100 dark:bg-stone-800/50 py-16">

@@ -1,10 +1,16 @@
 ---
-import { loadQuery } from '../lib/loadQuery';
-import BaseLayout from '../layouts/BaseLayout.astro';
 import StorySection from '../components/story/Story.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadQuery } from '../lib/loadQuery';
+import { PRODUCTION_ORIGIN } from '../utils/canonical';
+import { buildPageGraph } from '../utils/jsonld';
+import { isPreviewRequest } from '../utils/preview';
+import { findSitePage } from '../utils/site-pages';
+
+const page = findSitePage('/story')!;
 
 // Detect preview mode from URL (Sanity Presentation tool)
-const preview = Astro.url.searchParams.has('preview') || Astro.url.searchParams.has('sanity-preview');
+const preview = isPreviewRequest(Astro.url);
 
 // Fetch timeline events and page content from Sanity
 const [timelineEvents, pageContent] = await Promise.all([
@@ -19,18 +25,28 @@ const [timelineEvents, pageContent] = await Promise.all([
         narrative,
         "photo": photo.asset->url
       }
-    `
+    `,
   }),
   loadQuery<any>({
     preview,
-    query: `*[_type == "siteSettings"][0].storyPage`
-  })
+    query: `*[_type == "siteSettings"][0].storyPage`,
+  }),
 ]);
+
+// AboutPage rather than WebPage: the page's subject is the Person the homepage
+// defines, referenced by @id rather than redescribed here.
+const jsonLd = buildPageGraph(
+  {
+    path: page.path,
+    name: page.title,
+    description: page.description,
+    type: 'AboutPage',
+    breadcrumbLabel: page.navLabel,
+  },
+  Astro.site?.origin ?? PRODUCTION_ORIGIN,
+);
 ---
 
-<BaseLayout
-  title="My Story - Mike Lacey"
-  description="Mike Lacey's television career, era by era: from a 1981 job in a New York shipping department to directing PGA Tour golf, by way of Nickelodeon, MTV, and ESPN."
->
+<BaseLayout title={page.title} description={page.description} jsonLd={jsonLd}>
   <StorySection timelineEvents={timelineEvents} pageContent={pageContent} />
 </BaseLayout>
