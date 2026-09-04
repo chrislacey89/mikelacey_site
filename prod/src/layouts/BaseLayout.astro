@@ -1,8 +1,11 @@
 ---
-import MainNav from '../components/shell/MainNav.tsx';
 import { VisualEditing } from '@sanity/astro/visual-editing';
 import JsonLd from '../components/shell/JsonLd.astro';
-import { PRODUCTION_ORIGIN, canonicalUrl } from '../utils/canonical';
+import MainNav from '../components/shell/MainNav.tsx';
+import SiteFooter from '../components/shell/SiteFooter.astro';
+import { canonicalUrl, PRODUCTION_ORIGIN } from '../utils/canonical';
+import { isPreviewRequest } from '../utils/preview';
+import { findSitePage, markdownPathFor, SITE_PAGES } from '../utils/site-pages';
 import '../styles/global.css';
 
 interface Props {
@@ -11,34 +14,53 @@ interface Props {
   ogImage?: string;
   /** Structured-data graph for this page. Pages that have none omit it. */
   jsonLd?: object | null;
+  /**
+   * Keep this page out of the index. Set on error pages only.
+   *
+   * Also suppresses the canonical link: a canonical is a nomination for
+   * indexing, so emitting one next to `noindex` states two contradictory
+   * things about the same URL and leaves the engine to pick.
+   */
+  noindex?: boolean;
 }
 
 const {
   title = 'Mike Lacey - Television Director',
   description = 'Television director specializing in sports and entertainment production.',
   ogImage,
-  jsonLd
+  jsonLd,
+  noindex = false,
 } = Astro.props;
 
-
-const siteUrl = (import.meta.env.VERCEL_ENV !== 'production' && import.meta.env.VERCEL_URL)
-  ? `https://${import.meta.env.VERCEL_URL}`
-  : (Astro.site?.origin || PRODUCTION_ORIGIN);
+const siteUrl =
+  import.meta.env.VERCEL_ENV !== 'production' && import.meta.env.VERCEL_URL
+    ? `https://${import.meta.env.VERCEL_URL}`
+    : Astro.site?.origin || PRODUCTION_ORIGIN;
 const ogImageUrl = ogImage || `${siteUrl}/api/og.png?title=${encodeURIComponent(title)}`;
 
 // Not siteUrl. That value is preview-aware by design for OG images; a canonical
 // built from it would have every preview deploy nominate itself for indexing.
 const canonical = canonicalUrl(Astro.url, Astro.site);
 
+// Only inventory pages have a markdown companion. On /404 and any future route
+// outside the inventory this is undefined and no alternate is advertised —
+// pointing at a `.md` address that 404s is worse than staying quiet.
+const currentPage = findSitePage(Astro.url.pathname);
+const markdownPath = currentPage ? markdownPathFor(currentPage.path) : null;
+
+// Visual Editing is a client runtime, and before this it shipped on every
+// request. It has nothing to attach to outside the Presentation tool: pages
+// only request the stega-annotated drafts perspective under the same
+// predicate, so off-preview the overlay would load and find no annotations.
+const preview = isPreviewRequest(Astro.url);
+
 const currentPath = Astro.url.pathname;
 
-const navItems = [
-  { label: 'Home', href: '/', isActive: currentPath === '/' },
-  { label: 'Story', href: '/story', isActive: currentPath === '/story' },
-  { label: 'Production Credits', href: '/work', isActive: currentPath === '/work' },
-  { label: 'Attaboys', href: '/attaboys', isActive: currentPath === '/attaboys' },
-  { label: 'Connect', href: '/connect', isActive: currentPath === '/connect' },
-];
+const navItems = SITE_PAGES.map((page) => ({
+  label: page.navLabel,
+  href: page.path,
+  isActive: currentPath === page.path,
+}));
 ---
 
 <!DOCTYPE html>
@@ -47,37 +69,66 @@ const navItems = [
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {noindex
+      ? <meta name="robots" content="noindex, follow" />
+      : <link rel="canonical" href={canonical} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
 
+    {/* Advertised rather than left to be guessed: three incompatible `.md`
+        conventions are live in the wild. Mirrored in a `Link:` response header
+        by src/middleware.ts. Neither carrier has an observed consumer — this is
+        cheap correctness, not a ranking claim. */}
+    {markdownPath && (
+      <link rel="alternate" type="text/markdown" href={markdownPath} title={`${title} (Markdown)`} />
+    )}
+
     <!-- Open Graph -->
+    <meta property="og:site_name" content="Mike Lacey" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta property="og:image" content={ogImageUrl} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
-    <meta property="og:url" content={Astro.url.href} />
+    <meta property="og:image:alt" content={title} />
+    {/* The canonical address, not Astro.url.href — the request URL carries any
+        query string it arrived with, and an og:url with `?preview` in it is the
+        address that gets shared. */}
+    <meta property="og:url" content={canonical} />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content={title} />
 
     <JsonLd graph={jsonLd} />
   </head>
   <body class="min-h-screen bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100">
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:m-3 focus:rounded-md focus:bg-blue-600 focus:px-4 focus:py-2 focus:text-white"
+    >
+      Skip to main content
+    </a>
+    {/* client:media, not client:load. The only interactive part of the nav is
+        the mobile menu button, which is `md:hidden` — a desktop visitor was
+        paying for a React runtime to hydrate a control they cannot see. The
+        query matches Tailwind's `md` breakpoint, and Astro re-checks it on
+        resize, so narrowing the window still hydrates. */}
     <MainNav
-      client:load
+      client:media="(max-width: 767.98px)"
       brandName="Mike Lacey"
       items={navItems}
     />
-    <main>
+    <main id="main-content">
       <slot />
     </main>
-    <VisualEditing enabled={true} zIndex={1000} />
+    <SiteFooter />
+    {preview && <VisualEditing enabled={true} zIndex={1000} />}
   </body>
 </html>

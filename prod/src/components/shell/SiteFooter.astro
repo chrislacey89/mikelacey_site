@@ -1,0 +1,137 @@
+---
+import connectData from '../../data/connect.json';
+import { loadQuery } from '../../lib/loadQuery';
+import type { ContactInfo } from '../../types';
+import { SITE_PAGES } from '../../utils/site-pages';
+
+/**
+ * Site-wide footer.
+ *
+ * Two jobs beyond the visual one. It puts the contact details into the server
+ * response of every page rather than only /connect — before this, a crawler
+ * that fetched /work and did not follow a link found no way to reach the
+ * subject of the page. And it gives every page a second set of internal links
+ * with descriptive anchor text, which the header nav's one-word labels do not
+ * provide.
+ */
+
+// Published perspective, unconditionally. The Presentation tool has no overlay
+// for a layout-level fetch, and forcing preview here would make the layout
+// require SANITY_API_READ_TOKEN on every route including 404.
+let contactInfo: ContactInfo = connectData.contactInfo;
+let profileTitle: string | undefined;
+try {
+  const settings = await loadQuery<{
+    contactInfo?: ContactInfo;
+    profile?: { title?: string };
+  }>({
+    query: '*[_type == "siteSettings"][0]{contactInfo, profile{title}}',
+  });
+  if (settings?.contactInfo?.email) contactInfo = settings.contactInfo;
+  profileTitle = settings?.profile?.title;
+} catch {
+  // The bundled JSON is the same data, one deploy behind at worst. A footer
+  // that throws would take down every page including the 404 handler, so an
+  // unreachable CMS degrades to stale rather than fatal.
+}
+
+const year = new Date().getFullYear();
+
+const descriptions: Record<string, string> = {
+  '/': 'Home',
+  '/story': 'The career story, era by era',
+  '/work': 'Production credits, photos, and interviews',
+  '/attaboys': 'Letters of recognition from colleagues',
+  '/connect': 'Contact details and enquiry form',
+};
+---
+
+<footer class="border-t border-stone-200 dark:border-stone-800 bg-stone-100 dark:bg-stone-950">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+      <div>
+        <p class="text-lg font-semibold text-stone-900 dark:text-stone-100">
+          {contactInfo.fullName}
+        </p>
+        {/* profile.title, not contactInfo.title. The latter is the vCard's
+            short form ("Director"); the former is what the hero, the nav and
+            the structured data all call the role. One page describing the same
+            person by a narrower title than every other is exactly the kind of
+            drift that blurs an entity. Falls back rather than inventing a
+            third wording. */}
+        <p class="mt-2 text-sm text-stone-600 dark:text-stone-400 max-w-xs">
+          {profileTitle || contactInfo.title}
+        </p>
+      </div>
+
+      <nav aria-labelledby="footer-nav-heading">
+        <h2
+          id="footer-nav-heading"
+          class="text-sm font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400"
+        >
+          Explore
+        </h2>
+        <ul class="mt-4 space-y-2">
+          {SITE_PAGES.filter((page) => page.path !== '/').map((page) => (
+            <li>
+              <a
+                href={page.path}
+                class="text-sm text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                {descriptions[page.path] ?? page.navLabel}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div>
+        <h2 class="text-sm font-semibold uppercase tracking-wider text-stone-500 dark:text-stone-400">
+          Contact
+        </h2>
+        <ul class="mt-4 space-y-2 text-sm">
+          <li>
+            <a
+              href={`mailto:${contactInfo.email}`}
+              class="text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              {contactInfo.email}
+            </a>
+          </li>
+          <li>
+            <a
+              href={`tel:${contactInfo.phone}`}
+              class="text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              {contactInfo.phoneDisplay}
+            </a>
+          </li>
+          <li>
+            <a
+              href={contactInfo.imdb}
+              rel="noopener noreferrer me"
+              target="_blank"
+              class="text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              {contactInfo.fullName} on IMDb
+            </a>
+          </li>
+          <li>
+            <a
+              href={contactInfo.linkedin}
+              rel="noopener noreferrer me"
+              target="_blank"
+              class="text-stone-700 dark:text-stone-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              {contactInfo.fullName} on LinkedIn
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="mt-10 pt-6 border-t border-stone-200 dark:border-stone-800 text-xs text-stone-500 dark:text-stone-500">
+      &copy; {year} {contactInfo.fullName}. All rights reserved.
+    </p>
+  </div>
+</footer>

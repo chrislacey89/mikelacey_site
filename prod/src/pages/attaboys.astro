@@ -1,10 +1,16 @@
 ---
-import { loadQuery } from '../lib/loadQuery';
-import BaseLayout from '../layouts/BaseLayout.astro';
 import AttaboysSection from '../components/attaboys/Attaboys.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadQuery } from '../lib/loadQuery';
+import { PRODUCTION_ORIGIN } from '../utils/canonical';
+import { buildPageGraph } from '../utils/jsonld';
+import { isPreviewRequest } from '../utils/preview';
+import { findSitePage } from '../utils/site-pages';
+
+const page = findSitePage('/attaboys')!;
 
 // Detect preview mode from URL (Sanity Presentation tool)
-const preview = Astro.url.searchParams.has('preview') || Astro.url.searchParams.has('sanity-preview');
+const preview = isPreviewRequest(Astro.url);
 
 // Fetch testimonials and page content from Sanity
 const [testimonials, pageContent] = await Promise.all([
@@ -17,18 +23,30 @@ const [testimonials, pageContent] = await Promise.all([
         "alt": image.alt,
         caption
       }
-    `
+    `,
   }),
   loadQuery<any>({
     preview,
-    query: `*[_type == "siteSettings"][0].attaboysPage`
-  })
+    query: `*[_type == "siteSettings"][0].attaboysPage`,
+  }),
 ]);
+
+// No Review or Testimonial markup. These are scanned letters; the reviewer
+// names, dates, and bodies live inside the images, so the only fields schema.org
+// would want are ones this site cannot read. CollectionPage describes what the
+// page is without asserting anything it cannot show.
+const jsonLd = buildPageGraph(
+  {
+    path: page.path,
+    name: page.title,
+    description: page.description,
+    type: 'CollectionPage',
+    breadcrumbLabel: page.navLabel,
+  },
+  Astro.site?.origin ?? PRODUCTION_ORIGIN,
+);
 ---
 
-<BaseLayout
-  title="Attaboys - Mike Lacey"
-  description="Thank-you letters and notes of recognition sent to television director Mike Lacey by colleagues at the LPGA, Nickelodeon, MTV, and Children's Miracle Network."
->
+<BaseLayout title={page.title} description={page.description} jsonLd={jsonLd}>
   <AttaboysSection testimonials={testimonials} pageContent={pageContent} />
 </BaseLayout>

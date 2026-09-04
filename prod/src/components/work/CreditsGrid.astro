@@ -14,9 +14,11 @@ const { credits } = Astro.props;
       <h3 class="font-semibold text-stone-900 dark:text-white">
         {credit.name}
       </h3>
-      <p class="text-sm text-stone-500 dark:text-stone-400">
-        {credit.network}
-      </p>
+      {credit.network?.trim() && (
+        <p class="text-sm text-stone-500 dark:text-stone-400">
+          {credit.network.trim()}
+        </p>
+      )}
     </div>
   ))}
 </div>

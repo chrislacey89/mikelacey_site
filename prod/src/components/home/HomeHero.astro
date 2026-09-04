@@ -1,8 +1,9 @@
 ---
-import { Image, getImage } from 'astro:assets';
-import type { Hero, Profile, CTA } from '../../types';
-import localHeadshotImage from '../../assets/images/headshot.jpeg';
+import { getImage, Image } from 'astro:assets';
 import localBackgroundImage from '../../assets/images/background.jpeg';
+import localHeadshotImage from '../../assets/images/headshot.jpeg';
+import type { CTA, Hero, Profile } from '../../types';
+import { sanityImageUrl } from '../../utils/sanity-image';
 
 interface Props {
   hero: Hero & { backgroundImage?: string };
@@ -12,9 +13,30 @@ interface Props {
 
 const { hero, profile, ctas } = Astro.props;
 
-// Use Sanity CDN URL if available, otherwise use local optimized image
-const backgroundImageUrl = hero?.backgroundImage || (await getImage({ src: localBackgroundImage, format: 'webp', quality: 80 })).src;
-const headshotImageUrl = profile?.headshotImage;
+// Sanity assets arrive at whatever size they were uploaded. The headshot was
+// measured as a 2532x1170 PNG rendered into a 384px circle — the LCP element on
+// the site's most important page, at roughly forty times the bytes it needs.
+// Both URLs now go through Sanity's image pipeline with `auto=format`.
+//
+// 768 is the 384px CSS box at 2x. The background sits under a 60-80% dark
+// overlay, so it is requested at a lower quality than the headshot: detail
+// nobody can see is the cheapest thing on the page to give up.
+const backgroundImageUrl =
+  sanityImageUrl(hero?.backgroundImage, { width: 1920, quality: 60 }) ||
+  (await getImage({ src: localBackgroundImage, format: 'webp', quality: 80 })).src;
+const headshotImageUrl = sanityImageUrl(profile?.headshotImage, {
+  width: 768,
+  height: 768,
+  fit: 'crop',
+  quality: 85,
+});
+
+// Names the subject and their role rather than repeating the name alone. Read
+// aloud by a screen reader and read as text by anything extracting the page,
+// this is the only place the image says what it shows.
+const headshotAlt = profile?.title
+  ? `${profile.name}, ${profile.title}`
+  : `Portrait of ${profile?.name ?? 'Mike Lacey'}`;
 ---
 
 <section class="relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
@@ -87,22 +109,25 @@ const headshotImageUrl = profile?.headshotImage;
             {headshotImageUrl ? (
               <img
                 src={headshotImageUrl}
-                alt={profile.name}
+                alt={headshotAlt}
                 width={768}
                 height={768}
                 class="w-full h-full object-cover"
                 loading="eager"
+                fetchpriority="high"
+                decoding="async"
               />
             ) : (
               <Image
                 src={localHeadshotImage}
-                alt={profile.name}
+                alt={headshotAlt}
                 width={768}
                 height={768}
                 format="webp"
                 quality={90}
                 class="w-full h-full object-cover"
                 loading="eager"
+                fetchpriority="high"
               />
             )}
             <!-- Subtle inner shadow for depth -->

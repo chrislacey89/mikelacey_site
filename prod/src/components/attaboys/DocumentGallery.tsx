@@ -14,12 +14,13 @@ export default function DocumentGallery({ testimonials }: DocumentGalleryProps) 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {testimonials.map((doc) => (
           <button
+            type="button"
             key={doc.id}
             onClick={() => setSelectedDoc(doc)}
             className="group relative aspect-[3/4] overflow-hidden rounded-lg bg-white dark:bg-stone-800 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             <img
-              src={doc.src}
+              src={doc.thumbSrc ?? doc.src}
               alt={doc.alt}
               loading="lazy"
               decoding="async"
@@ -35,10 +36,7 @@ export default function DocumentGallery({ testimonials }: DocumentGalleryProps) 
       </div>
 
       {selectedDoc && (
-        <DocumentLightbox
-          testimonial={selectedDoc}
-          onClose={() => setSelectedDoc(null)}
-        />
+        <DocumentLightbox testimonial={selectedDoc} onClose={() => setSelectedDoc(null)} />
       )}
     </>
   );

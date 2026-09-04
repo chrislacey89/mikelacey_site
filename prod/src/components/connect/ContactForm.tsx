@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { FormFields, ContactFormData } from '../../types';
+import type { ContactFormData, FormFields } from '../../types';
 
 interface ContactFormProps {
   formFields: FormFields;
@@ -11,7 +11,7 @@ export default function ContactForm({ formFields, formspreeId }: ContactFormProp
     name: '',
     email: '',
     phone: '',
-    message: ''
+    message: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -23,13 +23,11 @@ export default function ContactForm({ formFields, formspreeId }: ContactFormProp
     setError(null);
 
     try {
-      const endpoint = formspreeId
-        ? `https://formspree.io/f/${formspreeId}`
-        : '#';
+      const endpoint = formspreeId ? `https://formspree.io/f/${formspreeId}` : '#';
 
       if (!formspreeId) {
         // Demo mode - just simulate success
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
         setSubmitted(true);
         return;
       }
@@ -37,13 +35,13 @@ export default function ContactForm({ formFields, formspreeId }: ContactFormProp
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...formData,
           _replyto: formData.email,
-          _subject: `New message from ${formData.name}`
+          _subject: `New message from ${formData.name}`,
         }),
       });
 
@@ -68,20 +66,24 @@ export default function ContactForm({ formFields, formspreeId }: ContactFormProp
 
   const handleInputChange = (field: keyof ContactFormData, value: string) => {
     const formattedValue = field === 'phone' ? formatPhoneNumber(value) : value;
-    setFormData(prev => ({ ...prev, [field]: formattedValue }));
+    setFormData((prev) => ({ ...prev, [field]: formattedValue }));
   };
 
   if (submitted) {
     return (
       <div className="text-center py-12">
         <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-          <svg className="w-8 h-8 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-8 h-8 text-green-600 dark:text-green-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 className="text-xl font-semibold text-stone-900 dark:text-white mb-2">
-          Message Sent!
-        </h3>
+        <h3 className="text-xl font-semibold text-stone-900 dark:text-white mb-2">Message Sent!</h3>
         <p className="text-stone-600 dark:text-stone-400">
           Thanks for reaching out. I'll get back to you soon.
         </p>
@@ -89,17 +91,50 @@ export default function ContactForm({ formFields, formspreeId }: ContactFormProp
     );
   }
 
+  // `action` and `method` are the no-JS path, not decoration. Before this the
+  // form had neither, so a visitor whose bundle had not hydrated — or had
+  // failed — submitted to the current URL and lost everything they typed. That
+  // is the site's primary conversion action failing silently. Formspree accepts
+  // an ordinary urlencoded POST at the same endpoint the fetch below uses, so
+  // the fallback is the real thing rather than a placeholder, and it is also
+  // what makes hydrating this island lazily safe.
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form
+      onSubmit={handleSubmit}
+      action={formspreeId ? `https://formspree.io/f/${formspreeId}` : undefined}
+      method="POST"
+      className="space-y-5"
+    >
+      {/* Formspree reads `_subject` from the POST body. The JS path sets it in
+          handleSubmit; this is its counterpart for the no-JS path. */}
+      <input
+        type="hidden"
+        name="_subject"
+        value={`New message from ${formData.name || 'the website'}`}
+      />
+      {/* Formspree's honeypot: bots fill it, people never see it. */}
+      <input
+        type="text"
+        name="_gotcha"
+        tabIndex={-1}
+        autoComplete="off"
+        className="hidden"
+        aria-hidden="true"
+      />
       {/* Name Field */}
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
+        <label
+          htmlFor="name"
+          className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2"
+        >
           {formFields.name.label}
           {formFields.name.required && <span className="text-red-500 ml-1">*</span>}
         </label>
         <input
           type="text"
           id="name"
+          name="name"
+          autoComplete="name"
           required={formFields.name.required}
           placeholder={formFields.name.placeholder}
           value={formData.name}
@@ -110,13 +145,18 @@ export default function ContactForm({ formFields, formspreeId }: ContactFormProp
 
       {/* Email Field */}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
+        <label
+          htmlFor="email"
+          className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2"
+        >
           {formFields.email.label}
           {formFields.email.required && <span className="text-red-500 ml-1">*</span>}
         </label>
         <input
           type="email"
           id="email"
+          name="email"
+          autoComplete="email"
           required={formFields.email.required}
           placeholder={formFields.email.placeholder}
           value={formData.email}
@@ -127,12 +167,17 @@ export default function ContactForm({ formFields, formspreeId }: ContactFormProp
 
       {/* Phone Field */}
       <div>
-        <label htmlFor="phone" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
+        <label
+          htmlFor="phone"
+          className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2"
+        >
           {formFields.phone.label}
         </label>
         <input
           type="tel"
           id="phone"
+          name="phone"
+          autoComplete="tel"
           placeholder={formFields.phone.placeholder}
           value={formData.phone}
           onChange={(e) => handleInputChange('phone', e.target.value)}
@@ -142,12 +187,16 @@ export default function ContactForm({ formFields, formspreeId }: ContactFormProp
 
       {/* Message Field */}
       <div>
-        <label htmlFor="message" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2">
+        <label
+          htmlFor="message"
+          className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-2"
+        >
           {formFields.message.label}
           {formFields.message.required && <span className="text-red-500 ml-1">*</span>}
         </label>
         <textarea
           id="message"
+          name="message"
           required={formFields.message.required}
           placeholder={formFields.message.placeholder}
           rows={5}
@@ -171,9 +220,25 @@ export default function ContactForm({ formFields, formspreeId }: ContactFormProp
       >
         {isSubmitting ? (
           <span className="flex items-center justify-center gap-2">
-            <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            <svg
+              className="animate-spin h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              />
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              />
             </svg>
             Sending...
           </span>

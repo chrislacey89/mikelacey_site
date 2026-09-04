@@ -1,10 +1,16 @@
 ---
-import { loadQuery } from '../lib/loadQuery';
-import BaseLayout from '../layouts/BaseLayout.astro';
 import WorkSection from '../components/work/Work.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { loadQuery } from '../lib/loadQuery';
+import { PRODUCTION_ORIGIN } from '../utils/canonical';
+import { buildItemList, buildPageGraph } from '../utils/jsonld';
+import { isPreviewRequest } from '../utils/preview';
+import { findSitePage } from '../utils/site-pages';
+
+const page = findSitePage('/work')!;
 
 // Detect preview mode from URL (Sanity Presentation tool)
-const preview = Astro.url.searchParams.has('preview') || Astro.url.searchParams.has('sanity-preview');
+const preview = isPreviewRequest(Astro.url);
 
 // Fetch work data and page content from Sanity
 const [credits, photos, interviews, pageContent] = await Promise.all([
@@ -16,7 +22,7 @@ const [credits, photos, interviews, pageContent] = await Promise.all([
         name,
         network
       }
-    `
+    `,
   }),
   loadQuery<any[]>({
     preview,
@@ -27,7 +33,7 @@ const [credits, photos, interviews, pageContent] = await Promise.all([
         "alt": image.alt,
         "caption": image.caption
       }
-    `
+    `,
   }),
   loadQuery<any[]>({
     preview,
@@ -40,19 +46,40 @@ const [credits, photos, interviews, pageContent] = await Promise.all([
         youtubeUrl,
         directVideoUrl
       }
-    `
+    `,
   }),
   loadQuery<any>({
     preview,
-    query: `*[_type == "siteSettings"][0].workPage`
-  })
+    query: `*[_type == "siteSettings"][0].workPage`,
+  }),
 ]);
+
+const origin = Astro.site?.origin ?? PRODUCTION_ORIGIN;
+
+// The credits list is marked up; the interviews are not. A VideoObject needs
+// `uploadDate` and `thumbnailUrl` to be worth emitting, and the CMS holds
+// neither — an incomplete VideoObject asserts less than no VideoObject, so the
+// honest move is to leave it out until the schema carries those fields.
+const creditsList = buildItemList(
+  `${origin}${page.path}#credits`,
+  'Production credits',
+  (credits ?? []).map((credit) => ({ name: credit.name, description: credit.network })),
+);
+
+const jsonLd = buildPageGraph(
+  {
+    path: page.path,
+    name: page.title,
+    description: page.description,
+    type: 'CollectionPage',
+    breadcrumbLabel: page.navLabel,
+    extraNodes: creditsList ? [creditsList] : [],
+  },
+  origin,
+);
 ---
 
-<BaseLayout
-  title="My Work - Mike Lacey"
-  description="Production credits, behind-the-scenes photos, and video interviews from Mike Lacey's work for Golf Channel, ESPN, Nickelodeon, Disney, NASCAR, and more."
->
+<BaseLayout title={page.title} description={page.description} jsonLd={jsonLd}>
   <WorkSection
     credits={credits}
     photos={photos}
