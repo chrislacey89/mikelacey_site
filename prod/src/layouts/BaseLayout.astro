@@ -7,6 +7,8 @@ import { canonicalUrl, PRODUCTION_ORIGIN } from '../utils/canonical';
 import { isPreviewRequest } from '../utils/preview';
 import { findSitePage, markdownPathFor, SITE_PAGES } from '../utils/site-pages';
 import '../styles/global.css';
+// The same file global.css declares, so Vite emits one hashed asset for both.
+import outfitLatinUrl from '@fontsource-variable/outfit/files/outfit-latin-wght-normal.woff2?url';
 
 interface Props {
   title?: string;
@@ -73,6 +75,12 @@ const navItems = SITE_PAGES.map((page) => ({
       ? <meta name="robots" content="noindex, follow" />
       : <link rel="canonical" href={canonical} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {/* Every page sets its text in Outfit, but the browser only learns that
+        after the stylesheet is parsed. Preloading moves the fetch up to the
+        HTML parse so text swaps in sooner. Latin only: latin-ext stays
+        on-demand. `crossorigin` is required even same-origin — fonts are
+        fetched in CORS mode, and a preload without it is downloaded twice. */}
+    <link rel="preload" href={outfitLatinUrl} as="font" type="font/woff2" crossorigin />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
 

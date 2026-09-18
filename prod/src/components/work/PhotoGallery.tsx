@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Photo } from '../../types';
+import { GALLERY_GRID_SIZES } from '../../utils/gallery-sizes';
 import { PhotoLightbox } from './PhotoLightbox';
 
 interface PhotoGalleryProps {
@@ -21,6 +22,8 @@ export default function PhotoGallery({ photos }: PhotoGalleryProps) {
           >
             <img
               src={photo.thumbSrc ?? photo.src}
+              srcSet={photo.thumbSrcSet}
+              sizes={photo.thumbSrcSet ? GALLERY_GRID_SIZES : undefined}
               alt={photo.alt}
               width={photo.width}
               height={photo.height}

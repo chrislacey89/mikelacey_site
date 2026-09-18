@@ -1,10 +1,21 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap');
+/* Self-hosted rather than @import-ed from Google Fonts. The remote import was a
+   three-hop render-blocking chain (our CSS -> fonts.googleapis.com CSS ->
+   fonts.gstatic.com file) across two extra origins on every page. Bundled, the
+   files get hashed immutable URLs on our own origin and the latin Outfit file is
+   preloaded from BaseLayout.
+
+   Outfit is one variable file covering every weight the site uses. The
+   unicode-range split means a visitor only downloads latin-ext if a page
+   actually contains those glyphs. Plex Mono appears once, bold, on /404 — only
+   that face is declared, and a browser fetches a face only when text uses it. */
+@import "@fontsource-variable/outfit";
+@import "@fontsource/ibm-plex-mono/latin-700.css";
 @import "tailwindcss";
 
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-sans: 'Outfit', sans-serif;
+  --font-sans: 'Outfit Variable', sans-serif;
   --font-mono: 'IBM Plex Mono', monospace;
 }
 

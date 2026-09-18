@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { sanityImageDimensions, sanityImageUrl } from './sanity-image';
+import { sanityImageDimensions, sanityImageSrcSet, sanityImageUrl } from './sanity-image';
 
 const ASSET =
   'https://cdn.sanity.io/images/yi6f32nh/production/ecc7a671dd838551fb8a6d538910eac9edcd485e-2532x1170.png';
@@ -66,5 +66,44 @@ describe('sanityImageDimensions', () => {
   it('returns undefined rather than guessing', () => {
     expect(sanityImageDimensions('https://example.com/photo.jpg')).toBeUndefined();
     expect(sanityImageDimensions(undefined)).toBeUndefined();
+  });
+});
+
+describe('sanityImageSrcSet', () => {
+  const candidates = (srcset: string | undefined) =>
+    (srcset ?? '').split(', ').map((entry) => {
+      const [href, descriptor] = entry.split(' ');
+      return { url: new URL(href), descriptor };
+    });
+
+  it('offers one format-negotiated derivative per width, smallest first', () => {
+    const entries = candidates(sanityImageSrcSet(ASSET, [800, 400]));
+
+    expect(entries.map((entry) => entry.descriptor)).toEqual(['400w', '800w']);
+    expect(entries.map((entry) => entry.url.searchParams.get('w'))).toEqual(['400', '800']);
+    expect(entries.every((entry) => entry.url.searchParams.get('auto') === 'format')).toBe(true);
+  });
+
+  // fit=max never upscales. Labelling the 2532px file "4000w" would tell the
+  // browser it is sharper than it is.
+  it('caps candidates at the source width instead of mislabelling them', () => {
+    const entries = candidates(sanityImageSrcSet(ASSET, [1280, 3000, 4000]));
+
+    expect(entries.map((entry) => entry.descriptor)).toEqual(['1280w', '2532w']);
+  });
+
+  it('scales height with width for cropped derivatives', () => {
+    const entries = candidates(
+      sanityImageSrcSet(ASSET, [400, 800], { aspectRatio: 4 / 3, fit: 'crop' }),
+    );
+
+    expect(entries.map((entry) => entry.url.searchParams.get('h'))).toEqual(['533', '1067']);
+    expect(entries[0].url.searchParams.get('fit')).toBe('crop');
+  });
+
+  it('has nothing to offer for non-Sanity or absent URLs', () => {
+    expect(sanityImageSrcSet('https://example.com/photo.jpg', [400])).toBeUndefined();
+    expect(sanityImageSrcSet('/images/headshot.jpeg', [400])).toBeUndefined();
+    expect(sanityImageSrcSet(undefined, [400])).toBeUndefined();
   });
 });

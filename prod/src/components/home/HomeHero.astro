@@ -3,7 +3,7 @@ import { getImage, Image } from 'astro:assets';
 import localBackgroundImage from '../../assets/images/background.jpeg';
 import localHeadshotImage from '../../assets/images/headshot.jpeg';
 import type { CTA, Hero, Profile } from '../../types';
-import { sanityImageUrl } from '../../utils/sanity-image';
+import { sanityImageSrcSet, sanityImageUrl } from '../../utils/sanity-image';
 
 interface Props {
   hero: Hero & { backgroundImage?: string };
@@ -16,17 +16,33 @@ const { hero, profile, ctas } = Astro.props;
 // Sanity assets arrive at whatever size they were uploaded. The headshot was
 // measured as a 2532x1170 PNG rendered into a 384px circle — the LCP element on
 // the site's most important page, at roughly forty times the bytes it needs.
-// Both URLs now go through Sanity's image pipeline with `auto=format`.
+// Both URLs go through Sanity's image pipeline with `auto=format`, and both
+// offer a srcset so a phone is not sent the desktop file.
 //
-// 768 is the 384px CSS box at 2x. The background sits under a 60-80% dark
-// overlay, so it is requested at a lower quality than the headshot: detail
-// nobody can see is the cheapest thing on the page to give up.
+// The background spans the viewport, so its candidates run from phone to
+// desktop widths. It sits under a 60-80% dark overlay, so it is requested at a
+// lower quality than the headshot and tops out at 1920 even for a 2x desktop:
+// detail nobody can see is the cheapest thing on the page to give up.
+const BACKGROUND_WIDTHS = [640, 960, 1280, 1920];
+const backgroundSrcSet = sanityImageSrcSet(hero?.backgroundImage, BACKGROUND_WIDTHS, { quality: 60 });
+const localBackground = backgroundSrcSet
+  ? undefined
+  : await getImage({ src: localBackgroundImage, widths: [640, 960, 1200], format: 'webp', quality: 80 });
 const backgroundImageUrl =
-  sanityImageUrl(hero?.backgroundImage, { width: 1920, quality: 60 }) ||
-  (await getImage({ src: localBackgroundImage, format: 'webp', quality: 80 })).src;
+  sanityImageUrl(hero?.backgroundImage, { width: 1920, quality: 60 }) ?? localBackground?.src;
+
+// The circle is 256, 320 and 384 CSS px at Tailwind's base, `sm` and `lg`
+// breakpoints; `HEADSHOT_SIZES` states exactly that so the browser can pick the
+// smallest candidate that still covers the box at the screen's density.
+const HEADSHOT_SIZES = '(min-width: 1024px) 384px, (min-width: 640px) 320px, 256px';
 const headshotImageUrl = sanityImageUrl(profile?.headshotImage, {
   width: 768,
   height: 768,
+  fit: 'crop',
+  quality: 85,
+});
+const headshotSrcSet = sanityImageSrcSet(profile?.headshotImage, [256, 384, 512, 640, 768], {
+  aspectRatio: 1,
   fit: 'crop',
   quality: 85,
 });
@@ -40,11 +56,26 @@ const headshotAlt = profile?.title
 ---
 
 <section class="relative min-h-[calc(100vh-4rem)] flex items-center overflow-hidden">
-  <!-- Background Image with Overlay -->
-  <div
-    class="absolute inset-0 bg-cover bg-center bg-no-repeat"
-    style={`background-image: url(${backgroundImageUrl})`}
-  >
+  <!-- Background Image with Overlay. A real <img>, not a CSS background: a
+       background is only discovered after the stylesheet is fetched and the
+       element laid out, which made the page's largest paint the last request
+       the browser learned about (#13). As an <img> it is found during the HTML
+       parse, and it takes the high fetch priority because it — not the smaller
+       headshot — is the LCP element. object-cover + object-center reproduce
+       the old bg-cover + bg-center crop exactly. -->
+  <div class="absolute inset-0">
+    {backgroundImageUrl && (
+      <img
+        src={backgroundImageUrl}
+        srcset={backgroundSrcSet ?? localBackground?.srcSet.attribute}
+        sizes="100vw"
+        alt=""
+        class="absolute inset-0 w-full h-full object-cover object-center"
+        loading="eager"
+        fetchpriority="high"
+        decoding="async"
+      />
+    )}
     <!-- Gradient overlay - lighter on left to show production rundown -->
     <div class="absolute inset-0 bg-gradient-to-r from-stone-950/70 via-stone-950/60 to-stone-950/50 dark:from-stone-950/80 dark:via-stone-950/70 dark:to-stone-950/60"></div>
   </div>
@@ -105,12 +136,13 @@ const headshotAlt = profile?.title
             {headshotImageUrl ? (
               <img
                 src={headshotImageUrl}
+                srcset={headshotSrcSet}
+                sizes={HEADSHOT_SIZES}
                 alt={headshotAlt}
                 width={768}
                 height={768}
                 class="w-full h-full object-cover"
                 loading="eager"
-                fetchpriority="high"
                 decoding="async"
               />
             ) : (
@@ -119,11 +151,12 @@ const headshotAlt = profile?.title
                 alt={headshotAlt}
                 width={768}
                 height={768}
+                widths={[256, 384, 512, 768]}
+                sizes={HEADSHOT_SIZES}
                 format="webp"
                 quality={90}
                 class="w-full h-full object-cover"
                 loading="eager"
-                fetchpriority="high"
               />
             )}
             <!-- Subtle inner shadow for depth -->

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Testimonial } from '../../types';
+import { GALLERY_GRID_SIZES } from '../../utils/gallery-sizes';
 import { DocumentLightbox } from './DocumentLightbox';
 
 interface DocumentGalleryProps {
@@ -21,6 +22,8 @@ export default function DocumentGallery({ testimonials }: DocumentGalleryProps) 
           >
             <img
               src={doc.thumbSrc ?? doc.src}
+              srcSet={doc.thumbSrcSet}
+              sizes={doc.thumbSrcSet ? GALLERY_GRID_SIZES : undefined}
               alt={doc.alt}
               loading="lazy"
               decoding="async"
