@@ -1,4 +1,4 @@
-import { defineType, defineField } from 'sanity'
+import { defineField, defineType } from 'sanity';
 
 export const siteSettingsType = defineType({
   name: 'siteSettings',
@@ -52,7 +52,9 @@ export const siteSettingsType = defineType({
         defineField({
           name: 'subtitle',
           title: 'Subtitle',
-          type: 'string',
+          description: 'Shown under the headshot on the homepage.',
+          type: 'text',
+          rows: 3,
         }),
       ],
     }),
@@ -160,8 +162,16 @@ export const siteSettingsType = defineType({
             defineField({ name: 'paragraph', title: 'Paragraph', type: 'text' }),
             defineField({ name: 'primaryCtaLabel', title: 'Primary Button Label', type: 'string' }),
             defineField({ name: 'primaryCtaHref', title: 'Primary Button Link', type: 'string' }),
-            defineField({ name: 'secondaryCtaLabel', title: 'Secondary Button Label', type: 'string' }),
-            defineField({ name: 'secondaryCtaHref', title: 'Secondary Button Link', type: 'string' }),
+            defineField({
+              name: 'secondaryCtaLabel',
+              title: 'Secondary Button Label',
+              type: 'string',
+            }),
+            defineField({
+              name: 'secondaryCtaHref',
+              title: 'Secondary Button Link',
+              type: 'string',
+            }),
           ],
         }),
       ],
@@ -216,7 +226,7 @@ export const siteSettingsType = defineType({
     prepare() {
       return {
         title: 'Site Settings',
-      }
+      };
     },
   },
-})
+});
