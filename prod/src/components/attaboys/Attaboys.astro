@@ -1,6 +1,11 @@
 ---
 import type { Testimonial } from '../../types';
-import { sanityImageSrcSet, sanityImageUrl, sanityLightboxImage } from '../../utils/sanity-image';
+import {
+  sanityImageDimensions,
+  sanityImageSrcSet,
+  sanityImageUrl,
+  sanityLightboxImage,
+} from '../../utils/sanity-image';
 import DocumentGallery from './DocumentGallery.tsx';
 
 interface PageContent {
@@ -47,6 +52,7 @@ const galleryTestimonials = testimonials.map((testimonial) => ({
     quality: 80,
   }),
   ...sanityLightboxImage(testimonial.src),
+  ...sanityImageDimensions(testimonial.src),
 }));
 ---
 

@@ -66,8 +66,29 @@ export function DocumentLightbox({ testimonial, onClose }: DocumentLightboxProps
           srcSet={testimonial.lightboxSrcSet}
           sizes={testimonial.lightboxSrcSet ? LIGHTBOX_SIZES : undefined}
           alt={testimonial.alt}
+          width={testimonial.width}
+          height={testimonial.height}
           decoding="async"
-          className="max-w-full max-h-[80vh] object-contain rounded-lg bg-white"
+          /* The grid's thumbnail, already decoded in cache, painted underneath
+             the full-size file. It fills the frame the overlay opens on, where
+             before there was an empty box until the download finished — about
+             700ms of nothing on a 4G connection. The full file covers it
+             exactly once it arrives: same image, same `contain` geometry, so
+             there is nothing to fade or swap.
+             The dimensions are what make this work. Without them the element
+             has no size until its own bytes land, and a background has nothing
+             to paint into. */
+          style={
+            testimonial.thumbSrc
+              ? {
+                  backgroundImage: `url("${testimonial.thumbSrc}")`,
+                  backgroundSize: 'contain',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                }
+              : undefined
+          }
+          className="max-w-full max-h-[80vh] w-auto h-auto object-contain rounded-lg bg-white"
         />
         <p className="mt-4 text-white text-center text-lg">{testimonial.caption}</p>
       </div>

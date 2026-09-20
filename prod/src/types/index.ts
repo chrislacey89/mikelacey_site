@@ -58,6 +58,10 @@ export interface Testimonial {
   /** See `Photo.lightboxSrc`. */
   lightboxSrc?: string;
   lightboxSrcSet?: string;
+  /** Intrinsic dimensions of the source; see `Photo.width`. The lightbox needs
+   *  them to reserve the right box before the full-size file arrives. */
+  width?: number;
+  height?: number;
   alt: string;
   caption: string;
 }

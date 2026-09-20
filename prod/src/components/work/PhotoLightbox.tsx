@@ -66,8 +66,29 @@ export function PhotoLightbox({ photo, onClose }: PhotoLightboxProps) {
           srcSet={photo.lightboxSrcSet}
           sizes={photo.lightboxSrcSet ? LIGHTBOX_SIZES : undefined}
           alt={photo.alt}
+          width={photo.width}
+          height={photo.height}
           decoding="async"
-          className="max-w-full max-h-[80vh] object-contain rounded-lg"
+          /* The grid's thumbnail, already decoded in cache, painted underneath
+             the full-size file. It fills the frame the overlay opens on, where
+             before there was an empty box until the download finished — about
+             700ms of nothing on a 4G connection. The full file covers it
+             exactly once it arrives: same image, same `contain` geometry, so
+             there is nothing to fade or swap.
+             The dimensions are what make this work. Without them the element
+             has no size until its own bytes land, and a background has nothing
+             to paint into. */
+          style={
+            photo.thumbSrc
+              ? {
+                  backgroundImage: `url("${photo.thumbSrc}")`,
+                  backgroundSize: 'contain',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat',
+                }
+              : undefined
+          }
+          className="max-w-full max-h-[80vh] w-auto h-auto object-contain rounded-lg"
         />
         <p className="mt-4 text-white text-center text-lg">{photo.caption}</p>
       </div>
