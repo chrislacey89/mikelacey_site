@@ -1,6 +1,11 @@
 ---
 import type { Credit, Interview, Photo } from '../../types';
-import { sanityImageDimensions, sanityImageUrl } from '../../utils/sanity-image';
+import {
+  sanityImageDimensions,
+  sanityImageSrcSet,
+  sanityImageUrl,
+  sanityLightboxImage,
+} from '../../utils/sanity-image';
 import CreditsGrid from './CreditsGrid.astro';
 import PhotoGallery from './PhotoGallery.tsx';
 import VideoInterviews from './VideoInterviews.astro';
@@ -47,11 +52,16 @@ const ctaHref = pageContent?.footer?.ctaHref || '/connect';
 
 // Derived here rather than inside PhotoGallery: the gallery is a client island,
 // and `sanityImageUrl` pulls in stega, which has no business in a browser
-// bundle. The grid column is ~360px wide at the widest breakpoint, so 800
-// covers it at 2x while the lightbox keeps the untouched `src`.
+// bundle. The grid column is ~352px wide at `lg` and full-width on a phone.
+// Candidates stop at 800 on purpose: a 3x phone would otherwise take a 1200px
+// file for a difference nobody can see past 2x — measured, that doubled the
+// gallery's bytes on mobile. The lightbox gets its own screen-sized set; see
+// `sanityLightboxImage`.
 const galleryPhotos = photos.map((photo) => ({
   ...photo,
   thumbSrc: sanityImageUrl(photo.src, { width: 800, quality: 80 }),
+  thumbSrcSet: sanityImageSrcSet(photo.src, [400, 800], { quality: 80 }),
+  ...sanityLightboxImage(photo.src),
   ...sanityImageDimensions(photo.src),
 }));
 ---

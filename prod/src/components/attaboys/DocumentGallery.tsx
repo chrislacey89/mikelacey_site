@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import type { Testimonial } from '../../types';
+import { GALLERY_GRID_SIZES, LIGHTBOX_SIZES } from '../../utils/gallery-sizes';
+import { prefetchImage } from '../../utils/prefetch-image';
 import { DocumentLightbox } from './DocumentLightbox';
 
 interface DocumentGalleryProps {
@@ -9,6 +11,11 @@ interface DocumentGalleryProps {
 export default function DocumentGallery({ testimonials }: DocumentGalleryProps) {
   const [selectedDoc, setSelectedDoc] = useState<Testimonial | null>(null);
 
+  // See PhotoGallery: the click is the last event in the sequence, not the
+  // first, so the download starts on the ones before it.
+  const warm = (doc: Testimonial) =>
+    prefetchImage(doc.lightboxSrc, doc.lightboxSrcSet, LIGHTBOX_SIZES);
+
   return (
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -17,10 +24,15 @@ export default function DocumentGallery({ testimonials }: DocumentGalleryProps) 
             type="button"
             key={doc.id}
             onClick={() => setSelectedDoc(doc)}
+            onPointerEnter={() => warm(doc)}
+            onFocus={() => warm(doc)}
+            onTouchStart={() => warm(doc)}
             className="group relative aspect-[3/4] overflow-hidden rounded-lg bg-white dark:bg-stone-800 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             <img
               src={doc.thumbSrc ?? doc.src}
+              srcSet={doc.thumbSrcSet}
+              sizes={doc.thumbSrcSet ? GALLERY_GRID_SIZES : undefined}
               alt={doc.alt}
               loading="lazy"
               decoding="async"

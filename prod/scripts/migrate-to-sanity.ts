@@ -29,9 +29,12 @@ const client = createClient({
   useCdn: false,
 });
 
-// Paths
-const dataDir = join(__dirname, '../src/data');
-const publicDir = join(__dirname, '../public');
+// Paths. The migration's source data and scans live in archive/, outside the
+// deployed public/ folder; see archive/README.md. Image paths in the JSON are
+// site-absolute (`/artifacts/...`, `/images/...`), so each is looked up in the
+// archive first and in public/ second.
+const dataDir = join(__dirname, '../archive/data');
+const imageRoots = [join(__dirname, '../archive'), join(__dirname, '../public')];
 
 // Helper: Read JSON file
 function readJson(filename: string) {
@@ -45,10 +48,12 @@ async function uploadImage(
 ): Promise<{ _type: 'image'; asset: { _type: 'reference'; _ref: string } } | null> {
   // Handle paths starting with /
   const relativePath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
-  const fullPath = join(publicDir, relativePath);
+  const fullPath = imageRoots
+    .map((root) => join(root, relativePath))
+    .find((path) => existsSync(path));
 
-  if (!existsSync(fullPath)) {
-    console.warn(`  Warning: Image not found: ${fullPath}`);
+  if (!fullPath) {
+    console.warn(`  Warning: Image not found: ${relativePath}`);
     return null;
   }
 

@@ -1,6 +1,6 @@
 ---
 import type { TimelineEvent } from '../../types';
-import { sanityImageUrl } from '../../utils/sanity-image';
+import { sanityImageDimensions, sanityImageSrcSet, sanityImageUrl } from '../../utils/sanity-image';
 
 interface Props {
   event: TimelineEvent;
@@ -14,8 +14,12 @@ const { event, isFirst = false, isLast = false } = Astro.props;
 const paragraphs = event.narrative.split('\n\n');
 
 // `max-w-md` is 28rem, so 896 covers it at 2x. Unconstrained, this was the
-// original upload at full resolution for every era with a photo.
+// original upload at full resolution for every era with a photo. The 448
+// candidate is the same box at 1x; the dimensions reserve its space so the
+// narrative below does not jump when the photo arrives.
 const photoUrl = sanityImageUrl(event.photo, { width: 896, quality: 80 });
+const photoSrcSet = sanityImageSrcSet(event.photo, [448, 672, 896], { quality: 80 });
+const photoDimensions = sanityImageDimensions(event.photo);
 ---
 
 <div class="relative grid grid-cols-1 md:grid-cols-[120px_1fr] gap-4 md:gap-8">
@@ -59,8 +63,12 @@ const photoUrl = sanityImageUrl(event.photo, { width: 896, quality: 80 });
       <div class="mt-6">
         <img
           src={photoUrl}
+          srcset={photoSrcSet}
+          sizes={photoSrcSet ? '(min-width: 480px) 448px, calc(100vw - 2rem)' : undefined}
+          width={photoDimensions?.width}
+          height={photoDimensions?.height}
           alt={`${event.title}${event.showYear && event.year ? `, ${event.year}` : ''}`}
-          class="rounded-lg shadow-lg max-w-md"
+          class="rounded-lg shadow-lg max-w-md w-full h-auto"
           loading="lazy"
           decoding="async"
         />

@@ -24,6 +24,13 @@ export interface Photo {
   /** Grid-sized derivative. Absent for non-Sanity assets, in which case the
    *  grid falls back to `src`. */
   thumbSrc?: string;
+  /** Grid candidates by width, so a phone and a 3x laptop each get the
+   *  smallest adequate file. Absent alongside `thumbSrc`. */
+  thumbSrcSet?: string;
+  /** Screen-sized, full-quality derivatives for the lightbox. Absent for
+   *  non-Sanity assets, in which case the lightbox opens `src`. */
+  lightboxSrc?: string;
+  lightboxSrcSet?: string;
   /** Intrinsic dimensions of the source, so the grid can reserve space before
    *  the image loads. Absent when they cannot be read from the asset URL. */
   width?: number;
@@ -47,6 +54,14 @@ export interface Testimonial {
   src: string;
   /** Grid-sized derivative; see `Photo.thumbSrc`. */
   thumbSrc?: string;
+  thumbSrcSet?: string;
+  /** See `Photo.lightboxSrc`. */
+  lightboxSrc?: string;
+  lightboxSrcSet?: string;
+  /** Intrinsic dimensions of the source; see `Photo.width`. The lightbox needs
+   *  them to reserve the right box before the full-size file arrives. */
+  width?: number;
+  height?: number;
   alt: string;
   caption: string;
 }

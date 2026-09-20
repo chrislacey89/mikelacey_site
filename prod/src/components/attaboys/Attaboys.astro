@@ -1,6 +1,11 @@
 ---
 import type { Testimonial } from '../../types';
-import { sanityImageUrl } from '../../utils/sanity-image';
+import {
+  sanityImageDimensions,
+  sanityImageSrcSet,
+  sanityImageUrl,
+  sanityLightboxImage,
+} from '../../utils/sanity-image';
 import DocumentGallery from './DocumentGallery.tsx';
 
 interface PageContent {
@@ -35,12 +40,19 @@ const footerParagraph =
 const ctaLabel = pageContent?.footer?.ctaLabel || 'Get in Touch';
 const ctaHref = pageContent?.footer?.ctaHref || '/connect';
 
-// Grid tiles are a fixed 3:4 box roughly 360px wide; the lightbox still opens
-// the untouched `src`. Same reason as Work.astro for doing it here rather than
-// inside the island.
+// Grid tiles are a fixed 3:4 box roughly 352px wide at `lg` and full-width on a
+// phone; the lightbox gets its own screen-sized set. Same reasons as Work.astro
+// for doing it here rather than inside the island, and for stopping at 800.
 const galleryTestimonials = testimonials.map((testimonial) => ({
   ...testimonial,
   thumbSrc: sanityImageUrl(testimonial.src, { width: 800, height: 1067, fit: 'crop', quality: 80 }),
+  thumbSrcSet: sanityImageSrcSet(testimonial.src, [400, 800], {
+    aspectRatio: 4 / 3,
+    fit: 'crop',
+    quality: 80,
+  }),
+  ...sanityLightboxImage(testimonial.src),
+  ...sanityImageDimensions(testimonial.src),
 }));
 ---
 
